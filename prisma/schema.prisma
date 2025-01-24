@@ -1,14 +1,108 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL_UNPOOLED")  
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)  
+  createdAt  DateTime @default(now())
+
+  quizzes              Quiz[]
+  userAttemptedQuizzes UserAttemptedQuiz[]
+}
+
+model Quiz {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)  @default("") 
+  description String   @default("") 
+  authorId    Int
+  createdAt   DateTime @default(now())
+
+  author      User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  questions   Question[]
+  userAttempts UserAttemptedQuiz[]
+}
+
+enum QuestionType {
+  multiple_choice
+  free_response
+}
+
+enum UserAttemptedQuizStatus {
+  in_progress
+  completed
+}
+
+model Question {
+  id        Int          @id @default(autoincrement())
+  text      String       @db.Text 
+  quizId    Int
+  type      QuestionType
+  createdAt DateTime @default(now())
+
+  quiz                      Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  multipleChoiceOptions      MultipleChoiceOption[]
+  userAttemptedMultipleChoice UserAttemptedQuestionMultipleChoice[]
+  userAttemptedFreeResponse  UserAttemptedQuestionFreeResponse[]
+}
+
+model MultipleChoiceOption {
+  id         Int      @id @default(autoincrement())
+  value      String   @db.VarChar(255)  
+  isCorrect  Boolean  @default(false)
+  questionId Int
+  createdAt  DateTime @default(now())
+
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userAnswers UserAttemptedQuestionMultipleChoice[]
+}
+
+model UserAttemptedQuiz {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  quizId     Int
+  quizStartTime DateTime @default(now()) 
+  quizEndTime   DateTime 
+  score      Int     @default(0)  
+  correct    Int     @default(0)  
+  incorrect  Int     @default(0)  
+  unanswered Int     @default(0)  
+  status     UserAttemptedQuizStatus @default(in_progress) 
+  isSynced   Boolean @default(false) 
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  attemptedMultipleChoice UserAttemptedQuestionMultipleChoice[]
+  attemptedFreeResponse UserAttemptedQuestionFreeResponse[]
+}
+
+model UserAttemptedQuestionMultipleChoice {
+  id                        Int      @id @default(autoincrement())
+  userAttemptedQuizId       Int
+  questionId                Int
+  multipleChoiceAnswerId    Int
+  timeSpent                 Int      @default(0) 
+  createdAt                 DateTime @default(now())
+
+  userAttemptedQuiz UserAttemptedQuiz @relation(fields: [userAttemptedQuizId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  multipleChoiceAnswer MultipleChoiceOption @relation(fields: [multipleChoiceAnswerId], references: [id], onDelete: Cascade)
+}
+
+model UserAttemptedQuestionFreeResponse {
+  id                  Int      @id @default(autoincrement())
+  userAttemptedQuizId Int
+  questionId         Int
+  answer            String   @db.Text  
+  timeSpent         Int      @default(0) 
+  createdAt         DateTime @default(now())
+
+  userAttemptedQuiz UserAttemptedQuiz @relation(fields: [userAttemptedQuizId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
