@@ -20,8 +20,13 @@ export default function RetakeQuizButton({ quizId }: { quizId: number }) {
         throw new Error("Failed to create a new quiz attempt.");
       }
 
-      // ✅ Redirect to the quiz page -> which will automatically start from question 1
-      router.push(`/quizzes/${quizId}`);
+      const data = await res.json();
+      if (!data.attemptId || !data.firstQuestionId) {
+        throw new Error("Invalid response from server.");
+      }
+
+      // ✅ Redirect directly to first question
+      router.replace(`/quizzes/${quizId}/questions/${data.firstQuestionId}`);
     } catch (err: any) {
       setError(err.message);
     }
