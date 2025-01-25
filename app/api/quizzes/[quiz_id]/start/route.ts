@@ -17,9 +17,9 @@ export async function POST(req: Request, { params }: { params: { quiz_id: string
       return NextResponse.json({ error: "Quiz not found or no questions available" }, { status: 404 });
     }
 
-    const quizEndTime = new Date(Date.now() + quiz.timeLimitInMinutes * 60 * 1000);
+    const quizEndTime = new Date(Date.now() + quiz.timeLimitInMinutes * 60 * 300);
 
-    await prisma.userAttemptedQuiz.create({
+    const newAttempt = await prisma.userAttemptedQuiz.create({
       data: {
         userId: user.id,
         quizId,
@@ -27,7 +27,11 @@ export async function POST(req: Request, { params }: { params: { quiz_id: string
       },
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      attemptId: newAttempt.id,
+      firstQuestionId: quiz.questions[0].id,
+    });
   } catch (error) {
     console.error("Error starting quiz:", error);
     return NextResponse.json({ error: "Failed to start quiz" }, { status: 500 });

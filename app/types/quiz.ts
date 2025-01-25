@@ -7,5 +7,3 @@ export type QuizModel = {
   timeLimitInMinutes: number | null;
   questions: QuestionModel[];
 };
-
-export { QuestionModel };

@@ -95,7 +95,7 @@ model UserAttemptedQuestionFreeResponse {
   answer            String   @db.Text  
   timeSpent         Int      @default(0) 
   createdAt         DateTime @default(now())
-  is_correct        Boolean  @default(false)
+  isCorrect        Boolean  @default(false)
 
   userAttemptedQuiz UserAttemptedQuiz @relation(fields: [userAttemptedQuizId], references: [id], onDelete: Cascade)
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
