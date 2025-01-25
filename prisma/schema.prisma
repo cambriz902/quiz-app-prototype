@@ -21,6 +21,7 @@ model Quiz {
   title       String   @db.VarChar(255)  @default("") 
   description String   @default("") 
   authorId    Int
+  timeLimitInMinutes Int @default(10)
   createdAt   DateTime @default(now())
 
   author      User @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -31,11 +32,6 @@ model Quiz {
 enum QuestionType {
   multiple_choice
   free_response
-}
-
-enum UserAttemptedQuizStatus {
-  in_progress
-  completed
 }
 
 model Question {
@@ -66,14 +62,11 @@ model UserAttemptedQuiz {
   id         Int      @id @default(autoincrement())
   userId     Int
   quizId     Int
-  quizStartTime DateTime @default(now()) 
   quizEndTime   DateTime 
   score      Int     @default(0)  
   correct    Int     @default(0)  
   incorrect  Int     @default(0)  
   unanswered Int     @default(0)  
-  status     UserAttemptedQuizStatus @default(in_progress) 
-  isSynced   Boolean @default(false) 
   createdAt  DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -102,6 +95,7 @@ model UserAttemptedQuestionFreeResponse {
   answer            String   @db.Text  
   timeSpent         Int      @default(0) 
   createdAt         DateTime @default(now())
+  is_correct        Boolean  @default(false)
 
   userAttemptedQuiz UserAttemptedQuiz @relation(fields: [userAttemptedQuizId], references: [id], onDelete: Cascade)
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
