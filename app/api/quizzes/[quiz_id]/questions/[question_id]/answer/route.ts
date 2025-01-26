@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { NextRequest } from "next/server";
 
 export async function POST(
-  req: Request, 
-  context: { params: { quiz_id: string; question_id: string } }
+  req: NextRequest, 
+  { params }: { params: { quiz_id: string; question_id: string } }
 ) {
-  const { params } = context;
+  const { question_id } = await params;
   const { selectedAnswer, attemptId, isLastQuestion } = await req.json();
-  const questionId = Number(params.question_id);
+  const questionId = Number(question_id);
   
   const question = await prisma.question.findUnique({ where: { id: questionId } });
   if (!question) return NextResponse.json({ error: "Question not found" }, { status: 404 });

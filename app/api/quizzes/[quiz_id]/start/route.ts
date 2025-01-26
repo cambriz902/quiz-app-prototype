@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { NextRequest } from "next/server";
 
 export async function POST(
-  req: Request, 
-  context: { params: { quiz_id: string } }
+  req: NextRequest, 
+  { params }:  { params: { quiz_id: string } }
 ) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   
-  const { params } = context;
-  const quizId = Number(params.quiz_id);
+  const { quiz_id } = await params;
+  const quizId = Number(quiz_id);
 
-  // ✅ Check for existing active attempt
   const existingAttempt = await prisma.userAttemptedQuiz.findFirst({
     where: {
       userId: user.id,
@@ -26,7 +26,6 @@ export async function POST(
     return NextResponse.json({ success: false, error: "Active quiz attempt already exists" }, { status: 400 });
   }
 
-  // ✅ Fetch quiz time limit to calculate `quizEndTime`
   const quiz = await prisma.quiz.findUnique({
     where: { id: quizId },
     include: { questions: { orderBy: { createdAt: "asc" } } }, // Get first question
@@ -36,7 +35,6 @@ export async function POST(
     return NextResponse.json({ error: "Quiz not found or has no questions" }, { status: 404 });
   }
 
-  // ✅ Create new attempt
   const newAttempt = await prisma.userAttemptedQuiz.create({
     data: {
       userId: user.id,
@@ -46,7 +44,6 @@ export async function POST(
     },
   });
 
-  // ✅ Get first question ID
   const firstQuestionId = quiz.questions[0].id;
 
   return NextResponse.json({ success: true, attemptId: newAttempt.id, firstQuestionId });
