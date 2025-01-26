@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 
 export async function POST(
   req: NextRequest, 
-  { params }:  { params: { quiz_id: string } }
+  { params }:  { params: Promise<{ quiz_id: string }> }
 ) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

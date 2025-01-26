@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 
 export async function POST(
   req: NextRequest, 
-  { params }: { params: { quiz_id: string; question_id: string } }
+  { params }: { params: Promise<{ quiz_id: string; question_id: string }> }
 ) {
   const { question_id } = await params;
   const { selectedAnswer, attemptId, isLastQuestion } = await req.json();
