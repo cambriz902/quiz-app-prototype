@@ -1,12 +1,11 @@
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { Quiz } from "@prisma/client";
 
 /**
  * Fetch quiz details by ID, including questions.
  * This function runs on the server.
  */
-export async function fetchQuizById(quizId: number): Promise<Quiz | null> {
+export async function fetchQuizById(quizId: number) {
   const quiz = await prisma.quiz.findUnique({
     where: { id: quizId },
     include: {
@@ -60,8 +59,8 @@ export async function fetchQuizWithProgress(quizId: number) {
       quizId,
       userId: user.id,
     },
-    orderBy: { createdAt: "desc" }, // ✅ Ensures we get the most recent attempt
-    take: 1, // ✅ Only fetch the latest attempt
+    orderBy: { createdAt: "desc" },
+    take: 1,
     include: {
       attemptedMultipleChoice: { select: { questionId: true } },
       attemptedFreeResponse: { select: { questionId: true } },
@@ -82,7 +81,7 @@ export async function fetchQuizWithProgress(quizId: number) {
       text: q.text,
       type: q.type,
       multipleChoiceOptions: q.multipleChoiceOptions,
-      attempted: answeredQuestions.has(q.id), // ✅ Mark attempted questions
+      attempted: answeredQuestions.has(q.id),
     })),
     userAttempt: userLatestAttempt
       ? {
@@ -144,10 +143,10 @@ export async function fetchQuizResults(quizId: number, attemptId: number) {
   return {
     quiz: { 
       title: quiz.title,
-      timeLimitInSeconds: quiz.timeLimitInMinutes * 60, // ✅ Convert to seconds
+      timeLimitInSeconds: quiz.timeLimitInMinutes * 60,
     },
     score: attempt.score,
-    durationInSeconds: attempt.durationInSeconds, // ✅ Include total time spent
+    durationInSeconds: attempt.durationInSeconds,
     questions: quiz.questions.map((question) => {
       const userMCAnswer = attempt.attemptedMultipleChoice.find((a) => a.questionId === question.id);
       const userFreeResponse = attempt.attemptedFreeResponse.find((a) => a.questionId === question.id);
