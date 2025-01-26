@@ -6,9 +6,9 @@ import { useState } from "react";
 type QuestionNavProps = {
   quizId: number;
   questionId: number;
-  selectedAnswer: number | string | null; // Supports both multiple-choice & free-response
+  selectedAnswer: number | string | null;
   attemptId: number;
-  isLastQuestion: boolean;
+  isLastQuestion: boolean; 
 };
 
 export default function QuestionNav({ quizId, questionId, selectedAnswer, attemptId, isLastQuestion }: QuestionNavProps) {
@@ -23,7 +23,7 @@ export default function QuestionNav({ quizId, questionId, selectedAnswer, attemp
       const response = await fetch(`/api/quizzes/${quizId}/questions/${questionId}/answer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ selectedAnswer, attemptId }),
+        body: JSON.stringify({ selectedAnswer, attemptId, isLastQuestion }),
       });
 
       if (!response.ok) {

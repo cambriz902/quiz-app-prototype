@@ -5,5 +5,5 @@ export type QuestionModel = {
   text: string;
   type: "multiple_choice" | "free_response";
   attempted: boolean;
-  multipleChoiceOptions: MultipleChoiceOptionModel[];
+  multipleChoiceOptions: MultipleChoiceOptionModel[] | null;
 };

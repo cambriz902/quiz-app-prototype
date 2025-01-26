@@ -16,16 +16,11 @@ export default function QuizContainer({ quiz, userAttempt }: QuizContainerProps)
   const router = useRouter();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string | number>>({});
-  
-  console.log("quizEndTime:", userAttempt.quizEndTime);
 
-
-  // 🕒 Calculate remaining time based on `quizEndTime`
   const [timeLeft, setTimeLeft] = useState(() => {
     return Math.max(0, Math.floor((new Date(userAttempt.quizEndTime).getTime() - Date.now()) / 1000));
   });
 
-  // ⏳ Timer Effect - Updates every second
   useEffect(() => {
     if (timeLeft <= 0) {
       router.push(`/quizzes/${quiz.id}/results?attemptId=${userAttempt?.id}`);
@@ -39,7 +34,6 @@ export default function QuizContainer({ quiz, userAttempt }: QuizContainerProps)
     return () => clearInterval(interval);
   }, [timeLeft, quiz.id, userAttempt, router]);
 
-  // 🚀 Set first unanswered question on load
   useEffect(() => {
     const firstUnansweredIndex = quiz.questions.findIndex((q) => !q.attempted);
     if (firstUnansweredIndex !== -1) {
@@ -59,7 +53,6 @@ export default function QuizContainer({ quiz, userAttempt }: QuizContainerProps)
 
   return (
     <div className="mt-8 w-full max-w-[800px]">
-      {/* 🕒 Timer & Progress */}
       <div className="flex justify-between items-center mb-4">
         <span className="text-lg font-semibold text-gray-700">
           Question {currentQuestionIndex + 1} of {totalQuestions}
@@ -69,7 +62,6 @@ export default function QuizContainer({ quiz, userAttempt }: QuizContainerProps)
         </span>
       </div>
 
-      {/* 📊 Progress Bar */}
       <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
         <div
           className="bg-blue-500 h-2 rounded-full transition-all"
@@ -77,26 +69,24 @@ export default function QuizContainer({ quiz, userAttempt }: QuizContainerProps)
         />
       </div>
 
-      {/* ✅ Render Question Type */}
       {currentQuestion.type === "multiple_choice" ? (
         <MultipleChoice
           question={currentQuestion}
           setAnswer={handleSetAnswer}
-          selectedAnswer={answers[currentQuestion.id]}
+          selectedAnswer={Number(answers[currentQuestion.id])} // Will be answer ID
         />
       ) : (
         <FreeResponse
           question={currentQuestion}
           setAnswer={handleSetAnswer}
-          answer={answers[currentQuestion.id]}
+          answer={answers[currentQuestion.id].toString()} // Will be user free response
         />
       )}
 
-      {/* ✅ Render Navigation */}
       <QuestionNav
         quizId={quiz.id}
         questionId={currentQuestion.id}
-        attemptId={Number(userAttempt?.id)}
+        attemptId={Number(userAttempt.id)}
         selectedAnswer={answers[currentQuestion.id]}
         isLastQuestion={currentQuestionIndex === quiz.questions.length - 1}
       />

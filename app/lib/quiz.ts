@@ -24,7 +24,6 @@ export async function fetchQuizById(quizId: number): Promise<Quiz | null> {
  * Fetch all quizzes from the database
  */
 export async function fetchQuizzes() {
-  console.log("fetchQuizzes -> getCurrentUser()", getCurrentUser())
   try {
     return await prisma.quiz.findMany({
       select: {
@@ -42,7 +41,6 @@ export async function fetchQuizzes() {
 }
 
 export async function fetchQuizWithProgress(quizId: number) {
-  console.log("fetchQuizWithProgress -> quizId", quizId)
   const user = getCurrentUser();
   
   const quiz = await prisma.quiz.findUnique({
@@ -54,11 +52,9 @@ export async function fetchQuizWithProgress(quizId: number) {
       },
     },
   });
-  console.log("fetchQuizWithProgress -> quiz", quiz)
+
   if (!quiz) return null;
 
-  // Check if user has an active quiz attempt
-  // ✅ Fetch the latest attempt instead of filtering by quizEndTime
   const userLatestAttempt = await prisma.userAttemptedQuiz.findFirst({
     where: {
       quizId,
@@ -71,12 +67,11 @@ export async function fetchQuizWithProgress(quizId: number) {
       attemptedFreeResponse: { select: { questionId: true } },
     },
   });
-  console.log("fetchQuizWithProgress -> userAttempt", userLatestAttempt)
+
   const answeredQuestions = new Set([
     ...(userLatestAttempt?.attemptedMultipleChoice.map((q) => q.questionId) || []),
     ...(userLatestAttempt?.attemptedFreeResponse.map((q) => q.questionId) || []),
   ]);
-  console.log("fetchQuizWithProgress -> answeredQuestions", answeredQuestions)
   return {
     id: quiz.id,
     title: quiz.title,
@@ -86,10 +81,7 @@ export async function fetchQuizWithProgress(quizId: number) {
       id: q.id,
       text: q.text,
       type: q.type,
-      multipleChoiceOptions: q.type === "multiple_choice" ? q.multipleChoiceOptions.map((opt) => ({
-        id: opt.id,
-        value: opt.value,
-      })) : undefined,
+      multipleChoiceOptions: q.multipleChoiceOptions,
       attempted: answeredQuestions.has(q.id), // ✅ Mark attempted questions
     })),
     userAttempt: userLatestAttempt
@@ -103,7 +95,6 @@ export async function fetchQuizWithProgress(quizId: number) {
 
 export async function fetchUserActiveAttempt(quizId: number) {
   const user = getCurrentUser();
-  console.log("fetchUserActiveAttempt -> user", user)
   const activeAttempt = await prisma.userAttemptedQuiz.findFirst({
     where: {
       userId: user.id,
@@ -116,7 +107,7 @@ export async function fetchUserActiveAttempt(quizId: number) {
       attemptedFreeResponse: { select: { questionId: true } },
     },
   });
-  console.log("fetchUserActiveAttempt -> activeAttempt", activeAttempt)
+
   return activeAttempt || null;
 }
 
@@ -127,8 +118,6 @@ export async function fetchUserActiveAttempt(quizId: number) {
  */
 export async function fetchQuizResults(quizId: number, attemptId: number) {
   const user = getCurrentUser();
-  console.log("fetchQuizResults -> user", user)
-  // ✅ Fetch quiz attempt & user answers
   const attempt = await prisma.userAttemptedQuiz.findUnique({
     where: { id: attemptId, userId: user.id, quizId: quizId },
     include: {
@@ -153,8 +142,12 @@ export async function fetchQuizResults(quizId: number, attemptId: number) {
   if (!quiz) return null;
 
   return {
-    quiz: { title: quiz.title },
+    quiz: { 
+      title: quiz.title,
+      timeLimitInSeconds: quiz.timeLimitInMinutes * 60, // ✅ Convert to seconds
+    },
     score: attempt.score,
+    durationInSeconds: attempt.durationInSeconds, // ✅ Include total time spent
     questions: quiz.questions.map((question) => {
       const userMCAnswer = attempt.attemptedMultipleChoice.find((a) => a.questionId === question.id);
       const userFreeResponse = attempt.attemptedFreeResponse.find((a) => a.questionId === question.id);

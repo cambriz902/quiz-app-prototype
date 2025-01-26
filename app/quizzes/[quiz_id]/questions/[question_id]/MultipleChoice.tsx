@@ -16,7 +16,7 @@ export default function MultipleChoice({ question, setAnswer, selectedAnswer }: 
   return (
     <div className="mt-4 space-y-2">
       <h2 className="text-2xl font-bold text-gray-900">{question.text}</h2>
-      {question.multipleChoiceOptions.map((option) => (
+      {question.multipleChoiceOptions?.map((option) => (
         <button
           key={option.id}
           className={`w-full p-3 text-left rounded-lg border ${

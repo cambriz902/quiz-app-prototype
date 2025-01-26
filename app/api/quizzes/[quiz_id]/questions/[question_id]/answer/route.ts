@@ -1,74 +1,43 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
 
 export async function POST(req: Request, { params }: { params: { quiz_id: string; question_id: string } }) {
-  const user = getCurrentUser();
-  const quizId = Number(params.quiz_id);
+  const { selectedAnswer, attemptId, isLastQuestion } = await req.json();
   const questionId = Number(params.question_id);
-  const { selectedAnswer, attemptId } = await req.json();
-
-  if (!attemptId) {
-    return NextResponse.json({ error: "Attempt ID is required" }, { status: 400 });
-  }
-
-  const question = await prisma.question.findUnique({
-    where: { id: questionId },
-    include: { multipleChoiceOptions: true },
-  });
-
+  
+  const question = await prisma.question.findUnique({ where: { id: questionId } });
   if (!question) return NextResponse.json({ error: "Question not found" }, { status: 404 });
 
-  let isCorrect = false;
-
   if (question.type === "multiple_choice") {
-    const correctOption = question.multipleChoiceOptions.find((opt) => opt.isCorrect);
-    isCorrect = correctOption?.id === selectedAnswer;
-
     await prisma.userAttemptedQuestionMultipleChoice.create({
       data: {
-        userAttemptedQuizId: attemptId,
-        questionId: questionId,
-        multipleChoiceAnswerId: selectedAnswer as number,
+        userAttemptedQuiz: { connect: { id: attemptId } },
+        question: { connect: { id: questionId } },
+        multipleChoiceAnswer: { connect: { id: selectedAnswer } },
       },
     });
   } else {
-    isCorrect = true; // Assume free response answers are correct for now
-
     await prisma.userAttemptedQuestionFreeResponse.create({
       data: {
-        userAttemptedQuizId: attemptId,
-        questionId: questionId,
-        answer: selectedAnswer as string,
-        isCorrect: true,
+        userAttemptedQuiz: { connect: { id: attemptId} },
+        question: { connect: { id: questionId } },
+        answer: selectedAnswer,
       },
     });
   }
 
-  // Fetch current attempt
-  const attempt = await prisma.userAttemptedQuiz.findUnique({
-    where: { id: attemptId },
-    include: { quiz: { select: { questions: true } } },
-  });
+  if (isLastQuestion) {
+    const attempt = await prisma.userAttemptedQuiz.findUnique({ where: { id: attemptId } });
+    if (!attempt) return NextResponse.json({ error: "Attempt not found" }, { status: 404 });
+    const durationInSeconds = Math.floor((new Date().getTime() - new Date(attempt.createdAt).getTime()) / 1000);
+    
+    await prisma.userAttemptedQuiz.update({
+      where: { id: attemptId },
+      data: { durationInSeconds },
+    });
 
-  if (!attempt) {
-    return NextResponse.json({ error: "Attempt not found" }, { status: 404 });
+    return NextResponse.json({ success: true, quizCompleted: true, durationInSeconds });
   }
 
-  const totalQuestions = attempt.quiz.questions.length;
-  const updatedCorrect = attempt.correct + (isCorrect ? 1 : 0);
-  const updatedIncorrect = attempt.incorrect + (isCorrect ? 0 : 1);
-  const updatedScore = Math.ceil((updatedCorrect / totalQuestions) * 100);
-
-  //  Update `UserAttemptedQuiz` progress
-  await prisma.userAttemptedQuiz.update({
-    where: { id: attemptId },
-    data: {
-      score: updatedScore,
-      correct: updatedCorrect,
-      incorrect: updatedIncorrect,
-    },
-  });
-
-  return NextResponse.json({ success: true, isCorrect, updatedScore });
+  return NextResponse.json({ success: true });
 }

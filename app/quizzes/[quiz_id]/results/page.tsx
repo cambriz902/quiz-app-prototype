@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { fetchQuizResults } from "@/lib/quiz";
+import RetakeQuizButton from "./RetakeQuizButton";
 
 export default async function QuizResultsPage({
   params,
@@ -12,22 +13,39 @@ export default async function QuizResultsPage({
   const attemptId = searchParams.attemptId ? Number(searchParams.attemptId) : null;
 
   if (!attemptId) {
-    redirect(`/quizzes/${quizId}`); // ✅ Server-side redirect if no attemptId
+    redirect(`/quizzes/${quizId}`);
   }
 
-  const { quiz, score, correct, incorrect, unanswered, questions } = await fetchQuizResults(quizId, attemptId);
+  const result = await fetchQuizResults(quizId, attemptId);
+
+  if (!result) {
+    redirect(`/quizzes/${quizId}`);
+  }
+  const { quiz, score, durationInSeconds, questions } = result;
+
+  const minutes = durationInSeconds !== null ? Math.floor(durationInSeconds / 60) : null;
+  const seconds = durationInSeconds !== null ? durationInSeconds % 60 : null;
+
+  const totalQuizMinutes = Math.floor(quiz.timeLimitInSeconds / 60);
+  const totalQuizSeconds = quiz.timeLimitInSeconds % 60;
+
+  const timeSpentMessage =
+    durationInSeconds !== null
+      ? `${minutes} min ${seconds} sec`
+      : `${totalQuizMinutes} min ${totalQuizSeconds} sec (Time Expired)`;
 
   return (
     <main className="container mx-auto px-6 py-10 bg-white flex flex-col items-center min-h-screen">
       <h1 className="text-3xl font-bold text-gray-900">Quiz Results</h1>
       <h2 className="text-2xl text-gray-700 mt-2">{quiz.title}</h2>
-      <h3 className="text-lg text-gray-600 mt-2">{quiz.description}</h3>
       <p className="text-lg text-gray-600 mt-2 font-semibold">Your Score: {score}%</p>
+      
+      <p className="text-lg text-gray-600 mt-2 font-semibold">
+        Time Spent: {timeSpentMessage}
+      </p>
 
-      {/* ✅ Display Questions with Updated Styling */}
       <div className="mt-10 w-full max-w-2xl space-y-6">
         {questions.map((question, index) => {
-          // ✅ Determine styling for unanswered questions
           const isUnanswered = question.userAnswer === null || question.userAnswer === undefined;
           const questionClasses = isUnanswered
             ? "bg-gray-100 border-yellow-300 italic text-gray-600"
@@ -45,7 +63,6 @@ export default async function QuizResultsPage({
                     const isCorrect = option.isCorrect;
                     const userSelected = question.userAnswer === option.id;
                     
-                    // ✅ Highlight correct/incorrect answers
                     const bgColor = isUnanswered
                       ? "bg-gray-100 border-yellow-300" 
                       : isCorrect
@@ -70,6 +87,7 @@ export default async function QuizResultsPage({
           );
         })}
       </div>
+      <RetakeQuizButton quizId={quizId} />
     </main>
   );
 }

@@ -3,7 +3,8 @@ import { redirect, notFound } from "next/navigation";
 import QuizContainer from "../QuizContainer";
 
 export default async function QuestionPage({ params }: { params: { quiz_id: string; question_id: string } }) {
-  const quizId = Number(params.quiz_id);
+  const { quiz_id } = params;
+  const quizId = Number(quiz_id);
 
   const quizWithProgress = await fetchQuizWithProgress(quizId);
 
@@ -11,7 +12,6 @@ export default async function QuestionPage({ params }: { params: { quiz_id: stri
     return notFound();
   }
 
-  // 🚨 If there's no active attempt, redirect the user to /quizzes/[quiz_id] 🚨
   if (!quizWithProgress.userAttempt) {
     redirect(`/quizzes/${quizId}`);
   }

@@ -27,8 +27,12 @@ export default function RetakeQuizButton({ quizId }: { quizId: number }) {
 
       // ✅ Redirect directly to first question
       router.replace(`/quizzes/${quizId}/questions/${data.firstQuestionId}`);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred.");
+      }
     }
   }
 
