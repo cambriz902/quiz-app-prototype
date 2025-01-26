@@ -6,17 +6,18 @@ export default async function QuizResultsPage({
   params,
   searchParams,
 }: {
-  params: { quiz_id: string };
-  searchParams: { attemptId?: string };
+  params: Promise<{ quiz_id: string }>;
+  searchParams: Promise<{ attemptId?: string }>;
 }) {
-  const quizId = Number(params.quiz_id);
-  const attemptId = searchParams.attemptId ? Number(searchParams.attemptId) : null;
+  const { quiz_id } = await params;
+  const { attemptId } = await searchParams;
+  const quizId = Number(quiz_id);
 
   if (!attemptId) {
     redirect(`/quizzes/${quizId}`);
   }
 
-  const result = await fetchQuizResults(quizId, attemptId);
+  const result = await fetchQuizResults(quizId, Number(attemptId));
 
   if (!result) {
     redirect(`/quizzes/${quizId}`);

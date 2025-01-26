@@ -2,8 +2,10 @@ import { fetchQuizWithProgress } from "@/lib/quiz";
 import { redirect, notFound } from "next/navigation";
 import QuizContainer from "../QuizContainer";
 
-export default async function QuestionPage({ params }: { params: { quiz_id: string; question_id: string } }) {
-  const { quiz_id } = params;
+export default async function QuestionPage(
+  { params }: { params: Promise<{ quiz_id: string; question_id: string }> }
+) {
+  const { quiz_id } = await params;
   const quizId = Number(quiz_id);
 
   const quizWithProgress = await fetchQuizWithProgress(quizId);

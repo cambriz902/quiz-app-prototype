@@ -1,7 +1,7 @@
 import { fetchQuizWithProgress } from "@/lib/quiz";
 import { redirect } from "next/navigation";
 
-export default async function QuizPage({ params }: { params: { quiz_id: string } }) {
+export default async function QuizPage({ params }: { params: Promise<{ quiz_id: string }> }) {
   const { quiz_id } = await params;
   const quizId = Number(quiz_id);
   const quizWithProgress = await fetchQuizWithProgress(quizId);
@@ -16,11 +16,9 @@ export default async function QuizPage({ params }: { params: { quiz_id: string }
 
   if (userAttempt) {
     if (new Date(userAttempt.quizEndTime) > now && unansweredQuestions > 0) {
-      // 🚀 If the quiz is active & has unanswered questions, continue the quiz
       const nextQuestion = quizWithProgress.questions.find(q => !q.attempted);
       redirect(`/quizzes/${quizId}/questions/${nextQuestion?.id}`);
     } else {
-      // 🚀 If quiz is finished (time expired or all answered), go to results
       redirect(`/quizzes/${quizId}/results?attemptId=${userAttempt.id}`);
     }
   }

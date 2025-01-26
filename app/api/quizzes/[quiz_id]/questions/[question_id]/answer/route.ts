@@ -6,7 +6,7 @@ export async function POST(
   req: NextRequest, 
   { params }: { params: Promise<{ quiz_id: string; question_id: string }> }
 ) {
-  const { question_id } = await params;
+  const question_id = (await params).question_id;
   const { selectedAnswer, attemptId, isLastQuestion } = await req.json();
   const questionId = Number(question_id);
   
