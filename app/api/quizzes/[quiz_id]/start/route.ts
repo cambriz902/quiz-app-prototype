@@ -2,10 +2,14 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
-export async function POST(req: Request, { params }: { params: { quiz_id: string } }) {
+export async function POST(
+  req: Request, 
+  context: { params: { quiz_id: string } }
+) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
+  
+  const { params } = context;
   const quizId = Number(params.quiz_id);
 
   // ✅ Check for existing active attempt

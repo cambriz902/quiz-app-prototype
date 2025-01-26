@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function POST(req: Request, { params }: { params: { quiz_id: string; question_id: string } }) {
+export async function POST(
+  req: Request, 
+  context: { params: { quiz_id: string; question_id: string } }
+) {
+  const { params } = context;
   const { selectedAnswer, attemptId, isLastQuestion } = await req.json();
   const questionId = Number(params.question_id);
   

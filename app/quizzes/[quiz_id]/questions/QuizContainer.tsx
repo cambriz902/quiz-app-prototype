@@ -79,7 +79,7 @@ export default function QuizContainer({ quiz, userAttempt }: QuizContainerProps)
         <FreeResponse
           question={currentQuestion}
           setAnswer={handleSetAnswer}
-          answer={answers[currentQuestion.id].toString()} // Will be user free response
+          answer={answers[currentQuestion.id] ? answers[currentQuestion.id].toString() : undefined} // Will be user free response
         />
       )}
 
