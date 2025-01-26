@@ -39,6 +39,11 @@ export async function fetchQuizzes() {
   }
 }
 
+/**
+ * 
+ * @param quizId quiz ID to fetch with progress data
+ * @returns Quiz with progress data to display in the UI
+ */
 export async function fetchQuizWithProgress(quizId: number) {
   const user = getCurrentUser();
   
@@ -90,24 +95,6 @@ export async function fetchQuizWithProgress(quizId: number) {
         }
       : null,
   };
-}
-
-export async function fetchUserActiveAttempt(quizId: number) {
-  const user = getCurrentUser();
-  const activeAttempt = await prisma.userAttemptedQuiz.findFirst({
-    where: {
-      userId: user.id,
-      quizId: quizId,
-      quizEndTime: { gt: new Date() }, 
-    },
-    orderBy: { createdAt: "desc" },
-    include: {
-      attemptedMultipleChoice: { select: { questionId: true } },
-      attemptedFreeResponse: { select: { questionId: true } },
-    },
-  });
-
-  return activeAttempt || null;
 }
 
 /**
