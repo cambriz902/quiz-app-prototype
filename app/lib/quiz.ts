@@ -6,23 +6,21 @@ import { getCurrentUser } from "@/lib/auth";
  * This function runs on the server.
  */
 export async function fetchQuizById(quizId: number) {
-  const quiz = await prisma.quiz.findUnique({
+  return await prisma.quiz.findUnique({
     where: { id: quizId },
     include: {
       questions: {
-        include: {
-          multipleChoiceOptions: true, 
-        },
+        include: { multipleChoiceOptions: true },
+        orderBy: { createdAt: "asc" },
       },
     },
   });
-  return quiz;
 }
 
 /**
- * Fetch all quizzes from the database
+ * Fetch all quizzes from the database with pagination
  */
-export async function fetchQuizzes() {
+export async function fetchQuizzes(page = 1, pageSize = 10) {
   try {
     return await prisma.quiz.findMany({
       select: {
@@ -32,6 +30,8 @@ export async function fetchQuizzes() {
         createdAt: true,
       },
       orderBy: { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
     });
   } catch (error) {
     console.error("Error fetching quizzes:", error);
@@ -40,13 +40,12 @@ export async function fetchQuizzes() {
 }
 
 /**
- * 
- * @param quizId quiz ID to fetch with progress data
- * @returns Quiz with progress data to display in the UI
+ * Fetch quiz with user's progress data.
+ * This function runs on the server.
  */
 export async function fetchQuizWithProgress(quizId: number) {
   const user = getCurrentUser();
-  
+
   const quiz = await prisma.quiz.findUnique({
     where: { id: quizId },
     include: {
@@ -54,28 +53,27 @@ export async function fetchQuizWithProgress(quizId: number) {
         include: { multipleChoiceOptions: true },
         orderBy: { createdAt: "asc" },
       },
+      userAttempts: {
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        include: {
+          attemptedMultipleChoice: { select: { questionId: true } },
+          attemptedFreeResponse: { select: { questionId: true } },
+        },
+      },
     },
   });
 
   if (!quiz) return null;
 
-  const userLatestAttempt = await prisma.userAttemptedQuiz.findFirst({
-    where: {
-      quizId,
-      userId: user.id,
-    },
-    orderBy: { createdAt: "desc" },
-    take: 1,
-    include: {
-      attemptedMultipleChoice: { select: { questionId: true } },
-      attemptedFreeResponse: { select: { questionId: true } },
-    },
-  });
+  const userLatestAttempt = quiz.userAttempts[0] || null;
 
   const answeredQuestions = new Set([
-    ...(userLatestAttempt?.attemptedMultipleChoice.map((q) => q.questionId) || []),
-    ...(userLatestAttempt?.attemptedFreeResponse.map((q) => q.questionId) || []),
+    ...(userLatestAttempt?.attemptedMultipleChoice?.map((q) => q.questionId) || []),
+    ...(userLatestAttempt?.attemptedFreeResponse?.map((q) => q.questionId) || []),
   ]);
+
   return {
     id: quiz.id,
     title: quiz.title,
@@ -98,16 +96,24 @@ export async function fetchQuizWithProgress(quizId: number) {
 }
 
 /**
- * 
- * @param quizId Quiz id to fetch results for
- * @returns Object containing quiz details and user's results
+ * Fetch quiz results for a specific attempt
  */
 export async function fetchQuizResults(quizId: number, attemptId: number) {
   const user = getCurrentUser();
+
   const attempt = await prisma.userAttemptedQuiz.findUnique({
     where: { id: attemptId, userId: user.id, quizId: quizId },
     include: {
-      quiz: { select: { title: true } },
+      quiz: {
+        select: {
+          title: true,
+          timeLimitInMinutes: true,
+          questions: {
+            include: { multipleChoiceOptions: true },
+            orderBy: { createdAt: "asc" },
+          },
+        },
+      },
       attemptedMultipleChoice: { include: { multipleChoiceAnswer: true } },
       attemptedFreeResponse: true,
     },
@@ -115,26 +121,14 @@ export async function fetchQuizResults(quizId: number, attemptId: number) {
 
   if (!attempt) return null;
 
-  const quiz = await prisma.quiz.findUnique({
-    where: { id: quizId },
-    include: { 
-      questions: { 
-        include: { multipleChoiceOptions: true },
-        orderBy: { createdAt: "asc" },
-      },
-    },
-  });
-
-  if (!quiz) return null;
-
   return {
-    quiz: { 
-      title: quiz.title,
-      timeLimitInSeconds: quiz.timeLimitInMinutes * 60,
+    quiz: {
+      title: attempt.quiz.title,
+      timeLimitInSeconds: attempt.quiz.timeLimitInMinutes * 60,
     },
     score: attempt.score,
     durationInSeconds: attempt.durationInSeconds,
-    questions: quiz.questions.map((question) => {
+    questions: attempt.quiz.questions.map((question) => {
       const userMCAnswer = attempt.attemptedMultipleChoice.find((a) => a.questionId === question.id);
       const userFreeResponse = attempt.attemptedFreeResponse.find((a) => a.questionId === question.id);
 

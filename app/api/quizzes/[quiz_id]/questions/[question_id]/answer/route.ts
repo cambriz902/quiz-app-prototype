@@ -6,43 +6,94 @@ export async function POST(
   req: NextRequest, 
   { params }: { params: Promise<{ quiz_id: string; question_id: string }> }
 ) {
-  const question_id = (await params).question_id;
-  const { selectedAnswer, attemptId, isLastQuestion } = await req.json();
-  const questionId = Number(question_id);
-  
-  const question = await prisma.question.findUnique({ where: { id: questionId } });
-  if (!question) return NextResponse.json({ error: "Question not found" }, { status: 404 });
+  try {
+    const { selectedAnswer, attemptId, isLastQuestion } = await req.json();
+    const { question_id } = await params;
+    const questionId = Number(question_id);
 
-  if (question.type === "multiple_choice") {
-    await prisma.userAttemptedQuestionMultipleChoice.create({
-      data: {
-        userAttemptedQuiz: { connect: { id: attemptId } },
-        question: { connect: { id: questionId } },
-        multipleChoiceAnswer: { connect: { id: selectedAnswer } },
+    const question = await prisma.question.findUnique({
+      where: { id: questionId },
+      select: {
+        type: true,
+        multipleChoiceOptions: {
+          where: { isCorrect: true },
+          select: { id: true },
+        },
       },
     });
-  } else {
-    await prisma.userAttemptedQuestionFreeResponse.create({
-      data: {
-        userAttemptedQuiz: { connect: { id: attemptId} },
-        question: { connect: { id: questionId } },
-        answer: selectedAnswer,
-      },
-    });
-  }
 
-  if (isLastQuestion) {
-    const attempt = await prisma.userAttemptedQuiz.findUnique({ where: { id: attemptId } });
-    if (!attempt) return NextResponse.json({ error: "Attempt not found" }, { status: 404 });
-    const durationInSeconds = Math.floor((new Date().getTime() - new Date(attempt.createdAt).getTime()) / 1000);
-    
-    await prisma.userAttemptedQuiz.update({
+    const attempt = await prisma.userAttemptedQuiz.findUnique({
       where: { id: attemptId },
-      data: { durationInSeconds },
+      select: {
+        id: true,
+        correct: true,
+        incorrect: true,
+        createdAt: true,
+      },
     });
 
-    return NextResponse.json({ success: true, quizCompleted: true, durationInSeconds });
-  }
+    if (!question || !attempt) {
+      return NextResponse.json({ error: "Invalid question or attempt" }, { status: 404 });
+    }
 
-  return NextResponse.json({ success: true });
+    let isCorrect = false;
+    let answerData;
+
+    // Transaction for writes
+    await prisma.$transaction(async (tx) => {
+      if (question.type === "multiple_choice") {
+        isCorrect = question.multipleChoiceOptions?.length > 0 && question.multipleChoiceOptions[0].id === Number(selectedAnswer);
+        answerData = {
+          userAttemptedQuizId: attemptId,
+          questionId,
+          multipleChoiceAnswerId: Number(selectedAnswer),
+        };
+
+        await tx.userAttemptedQuestionMultipleChoice.create({ data: answerData });
+      } else {
+        isCorrect = true; // Free response is assumed correct for now
+        answerData = {
+          userAttemptedQuizId: attemptId,
+          questionId,
+          answer: selectedAnswer.toString(),
+          isCorrect,
+        };
+
+        await tx.userAttemptedQuestionFreeResponse.create({ data: answerData });
+      }
+
+      // Update score & progress in one query
+      const totalCorrect = attempt.correct + (isCorrect ? 1 : 0);
+      const totalIncorrect = attempt.incorrect + (isCorrect ? 0 : 1);
+      const totalAnswered = totalCorrect + totalIncorrect;
+      const newScore = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+
+      const updateData: {
+        correct: number;
+        incorrect: number;
+        score: number;
+        durationInSeconds?: number;
+      } = {
+        correct: totalCorrect,
+        incorrect: totalIncorrect,
+        score: newScore,
+      };
+
+      // If last question, update durationInSeconds
+      if (isLastQuestion) {
+        updateData.durationInSeconds = Math.floor((Date.now() - new Date(attempt.createdAt).getTime()) / 1000);
+      }
+
+      await tx.userAttemptedQuiz.update({
+        where: { id: attemptId },
+        data: updateData,
+        select: { durationInSeconds: true }, // Ensure we return the updated value
+      });
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Error processing answer:", error);
+    return NextResponse.json({ error: "Failed to submit answer" }, { status: 500 });
+  }
 }

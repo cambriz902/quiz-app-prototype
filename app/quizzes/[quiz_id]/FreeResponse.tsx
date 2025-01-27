@@ -6,7 +6,7 @@ type FreeResponseProps = {
     text: string;
   };
   setAnswer: (questionId: number, answer: string) => void;
-  answer?: string;
+  answer: string | null;
 };
 
 export default function FreeResponse({ question, setAnswer, answer }: FreeResponseProps) {

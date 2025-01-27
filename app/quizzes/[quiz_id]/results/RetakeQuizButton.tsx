@@ -1,51 +1,47 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function RetakeQuizButton({ quizId }: { quizId: number }) {
-  const [isPending, startTransition] = useTransition();
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
+type RetakeQuizButtonProps = {
+  quizId: number;
+};
 
-  async function handleRetake() {
-    setError(null);
+export default function RetakeQuizButton({ quizId }: RetakeQuizButtonProps) {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleRetakeQuiz = async () => {
+    setIsLoading(true);
 
     try {
-      const res = await fetch(`/api/quizzes/${quizId}/start`, {
+      const response = await fetch(`/api/quizzes/${quizId}/start`, {
         method: "POST",
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to create a new quiz attempt.");
+      if (!response.ok) {
+        console.error("Failed to start a new quiz attempt");
+        return;
       }
 
-      const data = await res.json();
-      if (!data.attemptId || !data.firstQuestionId) {
-        throw new Error("Invalid response from server.");
+      const data = await response.json();
+      if (data.attemptId) {
+        router.push(`/quizzes/${quizId}`);
       }
-
-      // ✅ Redirect directly to first question
-      router.replace(`/quizzes/${quizId}/questions/${data.firstQuestionId}`);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred.");
-      }
+    } catch (error) {
+      console.error("Error starting a new attempt:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="mt-8">
-      {error && <p className="text-red-600">{error}</p>}
-      <button
-        onClick={() => startTransition(handleRetake)}
-        className="px-6 py-3 text-white bg-blue-500 hover:bg-blue-600 rounded-lg text-lg font-semibold transition-shadow shadow-md hover:shadow-lg"
-        disabled={isPending}
-      >
-        {isPending ? "Starting..." : "Retake Quiz"}
-      </button>
-    </div>
+    <button
+      onClick={handleRetakeQuiz}
+      disabled={isLoading}
+      className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300"
+    >
+      {isLoading ? "Starting..." : "Retake Quiz"}
+    </button>
   );
 }
