@@ -29,9 +29,8 @@ export default function RetakeQuizButton({ quizId }: RetakeQuizButtonProps) {
         router.push(`/quizzes/${quizId}`);
       }
     } catch (error) {
-      console.error("Error starting a new attempt:", error);
-    } finally {
       setIsLoading(false);
+      console.error("Error starting a new attempt:", error);
     }
   };
 
@@ -39,7 +38,11 @@ export default function RetakeQuizButton({ quizId }: RetakeQuizButtonProps) {
     <button
       onClick={handleRetakeQuiz}
       disabled={isLoading}
-      className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300"
+      className={`px-6 py-3 text-white rounded-lg transition-shadow ${
+        isLoading
+          ? "bg-gray-400 cursor-not-allowed"
+          : "bg-blue-500 hover:bg-blue-600 shadow-md hover:shadow-lg"
+      }`}
     >
       {isLoading ? "Starting..." : "Retake Quiz"}
     </button>

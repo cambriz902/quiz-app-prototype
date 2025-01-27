@@ -2,22 +2,6 @@ import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
 /**
- * Fetch quiz details by ID, including questions.
- * This function runs on the server.
- */
-export async function fetchQuizById(quizId: number) {
-  return await prisma.quiz.findUnique({
-    where: { id: quizId },
-    include: {
-      questions: {
-        include: { multipleChoiceOptions: true },
-        orderBy: { createdAt: "asc" },
-      },
-    },
-  });
-}
-
-/**
  * Fetch all quizzes from the database with pagination
  */
 export async function fetchQuizzes(page = 1, pageSize = 10) {
@@ -143,6 +127,7 @@ export async function fetchQuizResults(quizId: number, attemptId: number) {
           value: option.value,
           isCorrect: option.isCorrect,
         })),
+        isCorrectFreeResponse: question.type === "free_response" ? userFreeResponse?.isCorrect : null,
         userAnswer: question.type === "multiple_choice" ? userMCAnswer?.multipleChoiceAnswerId : userFreeResponse?.answer,
         wasAttempted: Boolean(userMCAnswer || userFreeResponse),
       };

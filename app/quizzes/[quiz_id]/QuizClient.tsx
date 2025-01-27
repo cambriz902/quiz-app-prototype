@@ -15,11 +15,16 @@ export default function QuizClient({ initialQuiz }: QuizClientProps) {
   const userAttempt = quiz.userAttempt;
   const router = useRouter();
 
-  // Handles starting a new quiz attempt
+
   const handleQuizStart = (newAttempt: { id: number; quizEndTime: string, durationInSeconds: number | null, score: number }) => {
+    const updatedQuestions = quiz.questions.map((q) => ({
+      ...q,
+      attempted: false,
+    }));
     setQuiz((prevQuiz) => ({
       ...prevQuiz,
       userAttempt: newAttempt,
+      questions: updatedQuestions, 
     }));
   };
 
@@ -51,9 +56,6 @@ export default function QuizClient({ initialQuiz }: QuizClientProps) {
             Completed on: {new Date(userAttempt.quizEndTime).toLocaleDateString()}
           </p>
           <p className="text-gray-700">Score: {userAttempt.score}</p>
-          <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
-            View Results
-          </button>
         </div>
       )}
     </div>
