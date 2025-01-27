@@ -54,6 +54,7 @@ export async function POST(
       attempt: {
         id: newAttempt.id,
         quizEndTime: newAttempt.quizEndTime.toISOString(),
+        durationInSeconds: newAttempt.durationInSeconds,
       },
     });
 

@@ -9,5 +9,7 @@ export type QuizProgressModel = {
   userAttempt: {
     id: number;
     quizEndTime: string;
+    durationInSeconds: number | null;
+    score: number;
   } | null;
 };

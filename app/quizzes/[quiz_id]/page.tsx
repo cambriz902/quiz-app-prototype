@@ -12,10 +12,5 @@ export default async function QuizPage({ params }: { params: Promise<{ quiz_id: 
     redirect("/quizzes");
   }
 
-  // Redirect if quiz is completed
-  if (quiz.userAttempt && new Date(quiz.userAttempt.quizEndTime) < new Date()) {
-    redirect(`/quizzes/${quizId}/results?attemptId=${quiz.userAttempt.id}`);
-  }
-
   return <QuizClient initialQuiz={quiz} />;
 }

@@ -4,7 +4,7 @@ import { useState } from "react";
 
 type StartQuizButtonProps = {
   quizId: number;
-  onQuizStart: (attempt: { id: number; quizEndTime: string }) => void;
+  onQuizStart: (attempt: { id: number; quizEndTime: string, durationInSeconds: number, score: number }) => void;
 };
 
 export default function StartQuizButton({ quizId, onQuizStart }: StartQuizButtonProps) {

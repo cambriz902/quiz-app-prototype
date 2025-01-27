@@ -90,6 +90,8 @@ export async function fetchQuizWithProgress(quizId: number) {
       ? {
           id: userLatestAttempt.id,
           quizEndTime: userLatestAttempt.quizEndTime.toISOString(),
+          durationInSeconds: userLatestAttempt.durationInSeconds,
+          score: userLatestAttempt.score,
         }
       : null,
   };
