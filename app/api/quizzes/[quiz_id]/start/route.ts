@@ -40,12 +40,13 @@ export async function POST(
       return NextResponse.json({ error: "Quiz not found or has no questions" }, { status: 404 });
     }
 
+    console.log("quiz.timeLimitInMinutes", quiz.timeLimitInMinutes);
     // Create a new attempt
     const newAttempt = await prisma.userAttemptedQuiz.create({
       data: {
         userId: user.id,
         quizId,
-        quizEndTime: new Date(Date.now() + quiz.timeLimitInMinutes * 6 * 1000).toISOString(),
+        quizEndTime: new Date(Date.now() + quiz.timeLimitInMinutes * 60 * 1000).toISOString(),
       },
     });
 
