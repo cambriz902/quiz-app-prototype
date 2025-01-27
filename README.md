@@ -36,17 +36,18 @@ The application allows users to **take quizzes**, **answer multiple-choice and f
 
 ## Future Enhancements
 - **No authentication or permission checking** is currently implemented but can be added.
-- **Support for handling server errors (500s) when saving answers** to prevent data loss.
+- **Support for handling server errors (500s)** to prevent data loss.
 - **Pagination for quiz attempts**; currently, only the latest attempt is displayed.
 - **Free-response answers are assumed correct by default** unless validation logic is added.
 - **Optimistic answering**: If answers are not saved successfully due to server issues, they can be synced on the next submission.
 - **Use IndexedDB instead of LocalStorage** to allow more space for longer quizzes in offline mode.
 - **Add tests** for API routes, models, and UI components.
 - **Enhance free-response answer validation** by using **LLMs** or **RAG (Retrieval-Augmented Generation)** if the answer is present in course materials.
-- **Modularize `<QuizContainer />`** by creating a `<Question />` component to encapsulate logic.
+- **Modularize `<QuizContainer />`** Example: Create a `<Question />` component to encapsulate logic.
 - **Improve SEO & metadata** for routes like `/quizzes/` and `/quizzes/[quiz_id]`.
 - **Batch answer updates when syncing after the user goes back online**.
 - **Before saving an answer, check if the user has already submitted an answer**, and add logic to handle duplicate submissions.
+- Handle quiz timer running out when user is offline.
 
 ## End-to-End Test Plan
 

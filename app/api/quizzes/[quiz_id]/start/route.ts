@@ -45,7 +45,7 @@ export async function POST(
       data: {
         userId: user.id,
         quizId,
-        quizEndTime: new Date(Date.now() + 60 * 1000), // Uses dynamic quiz time limit
+        quizEndTime: new Date(Date.now() + quiz.timeLimitInMinutes * 6 * 1000).toISOString(),
       },
     });
 
