@@ -44,7 +44,7 @@ export default function QuizClient({ initialQuiz }: QuizClientProps) {
     <div className="container mx-auto px-6 py-10 bg-white flex flex-col items-center min-h-screen">
       <h1 className="text-3xl font-bold text-gray-900">{quiz.title}</h1>
       <p className="text-lg text-gray-600 mt-2">{quiz.description}</p>
-      <StartQuizButton quizId={quiz.id} onQuizStart={handleQuizStart} />
+      <StartQuizButton quizId={quiz.id} hasAttempt={!!quiz.userAttempt} onQuizStart={handleQuizStart} />
       {/* Show Latest Attempt if Available */}
       {userAttempt && (
         <div

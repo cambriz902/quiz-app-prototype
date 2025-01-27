@@ -4,10 +4,11 @@ import { useState } from "react";
 
 type StartQuizButtonProps = {
   quizId: number;
+  hasAttempt: boolean;
   onQuizStart: (attempt: { id: number; quizEndTime: string, durationInSeconds: number, score: number }) => void;
 };
 
-export default function StartQuizButton({ quizId, onQuizStart }: StartQuizButtonProps) {
+export default function StartQuizButton({ quizId, hasAttempt, onQuizStart }: StartQuizButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleStartQuiz = async () => {
@@ -41,7 +42,7 @@ export default function StartQuizButton({ quizId, onQuizStart }: StartQuizButton
           : "bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-300 shadow-lg hover:shadow-xl"
       }`}
     >
-      {isLoading ? "Starting..." : "Start Quiz"}
+      {isLoading ? "Starting..." : hasAttempt ? "Retake Quiz" : "Start Quiz"}
     </button>
   );
 }
