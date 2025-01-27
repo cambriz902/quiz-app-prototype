@@ -45,14 +45,16 @@ export async function POST(
       data: {
         userId: user.id,
         quizId,
-        quizEndTime: new Date(Date.now() + quiz.timeLimitInMinutes * 60 * 1000), // Uses dynamic quiz time limit
+        quizEndTime: new Date(Date.now() + 60 * 1000), // Uses dynamic quiz time limit
       },
     });
 
     return NextResponse.json({
       success: true,
-      attemptId: newAttempt.id,
-      firstQuestionId: quiz.questions[0].id,
+      attempt: {
+        id: newAttempt.id,
+        quizEndTime: newAttempt.quizEndTime.toISOString(),
+      },
     });
 
   } catch (error) {

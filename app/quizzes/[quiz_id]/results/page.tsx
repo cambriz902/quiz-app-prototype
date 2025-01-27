@@ -45,7 +45,7 @@ export default async function QuizResultsPage({
         Time Spent: {timeSpentMessage}
       </p>
 
-      <div className="mt-10 w-full max-w-2xl space-y-6">
+      <div className="mt-10 mb-4 w-full max-w-2xl space-y-6">
         {questions.map((question, index) => {
           const isUnanswered = question.userAnswer === null || question.userAnswer === undefined;
           const questionClasses = isUnanswered

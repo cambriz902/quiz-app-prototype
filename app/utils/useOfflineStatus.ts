@@ -9,8 +9,6 @@ export default function useOfflineStatus() {
   const [isOffline, setIsOffline] = useState<boolean | null>(null); 
 
   useEffect(() => {
-    console.log("useOfflineStatus: useEffect");
-
     const handleStatusChange = () => {
       setIsOffline(!navigator.onLine);
     };

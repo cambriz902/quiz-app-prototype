@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 type StartQuizButtonProps = {
   quizId: number;
+  onQuizStart: (attempt: { id: number; quizEndTime: string }) => void;
 };
 
-export default function StartQuizButton({ quizId }: StartQuizButtonProps) {
-  const router = useRouter();
+export default function StartQuizButton({ quizId, onQuizStart }: StartQuizButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleStartQuiz = async () => {
@@ -19,9 +18,11 @@ export default function StartQuizButton({ quizId }: StartQuizButtonProps) {
       if (!response.ok) {
         throw new Error("Failed to start quiz");
       }
+  
+      const data = await response.json();
 
-      // ✅ Redirect to the first question in the quiz
-      router.push(`/quizzes/${quizId}/questions/1`);
+      // Update the quiz-taking experience in state instead of navigating
+      onQuizStart(data.attempt);
     } catch (error) {
       console.error("Error starting quiz:", error);
       alert("Failed to start quiz. Please try again.");

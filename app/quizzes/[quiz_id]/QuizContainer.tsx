@@ -84,7 +84,8 @@ export default function QuizContainer({ quiz }: QuizContainerProps) {
   const currentQuestion: QuestionModel = quiz.questions[currentIndex];
 
   return (
-    <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <div className="mt-8 max-w-3xl mx-auto bg-white p-6 rounded-lg shadow-md">
+      
       {/* Offline warning message */}
       {isOffline && (
         <div className="mb-4 p-3 text-white bg-yellow-500 rounded-lg text-center">

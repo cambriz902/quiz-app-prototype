@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 
 type CountdownTimerProps = {
-  targetTime: string; // 🕒 The timestamp of when the timer should end (ISO format)
-  onComplete: () => void; // 🔔 Callback function when the timer reaches 0
+  targetTime: string; 
+  onComplete: () => void; 
 };
 
 export default function useCountdownTimer({ targetTime, onComplete }: CountdownTimerProps) {
@@ -20,7 +20,7 @@ export default function useCountdownTimer({ targetTime, onComplete }: CountdownT
       setTimeLeft(remainingTime);
 
       if (remainingTime <= 0) {
-        onComplete(); // ✅ Call the function when time runs out
+        onComplete();
       }
     };
 

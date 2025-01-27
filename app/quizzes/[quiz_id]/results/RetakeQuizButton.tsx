@@ -25,7 +25,7 @@ export default function RetakeQuizButton({ quizId }: RetakeQuizButtonProps) {
       }
 
       const data = await response.json();
-      if (data.attemptId) {
+      if (data.attempt) {
         router.push(`/quizzes/${quizId}`);
       }
     } catch (error) {
