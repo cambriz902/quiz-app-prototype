@@ -122,12 +122,14 @@ This test plan outlines test cases for verifying the core functionalities of the
 #### Home Page Navigation
 **steps:**
 - User opens the app `/`.
-- Should display a title, description and View Quizzes button
-- User is able to click View Quizzes button to see quiz list
+- Should display a title, description and View Quizzes button.
+- User is able to click View Quizzes button to see quiz list.
 
 ***Expected Results:**
-- User sees home page title, description and button
-- Clicking View Quizzes button redirects them to `/quizzes/`
+- User sees home page title, description and button.
+- Clicking View Quizzes button redirects them to `/quizzes/`.
+ 
+**Manual Results:** Passed
 
 #### List Page Navigation
 **Steps:**
