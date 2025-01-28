@@ -114,12 +114,25 @@ Below is the schema design for the quiz application:
 - **Before saving an answer, check if the user has already submitted an answer**, and add logic to handle duplicate submissions.
 - Handle quiz timer running out when user is offline.
    
-### Manual Test Plan
+## End-to-End Test Plan
+
+This test plan outlines test cases for verifying the core functionalities of the Next.js Quiz App. It includes navigation, quiz interactions, submission, results, edge cases, and API testing.
+
 
 #### Home Page Navigation
+**steps:**
+- User opens the app `/`.
+- Should display a title, description and View Quizzes button
+- User is able to click View Quizzes button to see quiz list
+
+***Expected Results:**
+- User sees home page title, description and button
+- Clicking View Quizzes button redirects them to `/quizzes/`
+
+#### List Page Navigation
 **Steps:**
-- User opens the app at `/`.
-- Homepage should display a list of available quizzes.
+- User opens the app at `/quizzes/`.
+- Should display a list of available quizzes.
 - User clicks a quiz, which redirects them to `/quizzes/[quiz_id]`.
 
 **Expected Result:**
@@ -144,10 +157,6 @@ Below is the schema design for the quiz application:
 **Manual Results:** Passed
 
 ---
-
-## End-to-End Test Plan
-
-This test plan outlines test cases for verifying the core functionalities of the Next.js Quiz App. It includes navigation, quiz interactions, submission, results, edge cases, and API testing.
 
 #### Starting a Quiz
 **Steps:**
