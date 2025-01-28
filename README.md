@@ -4,6 +4,68 @@
 This project is a **full-stack quiz application** built using **Next.js**, **TypeScript**, and **Neon PostgreSQL (via Prisma ORM)**.  
 The application allows users to **take quizzes**, **answer multiple-choice and free-response questions**, and **view their results**.  
 
+
+# Quiz App Prototype - Local Setup Guide
+
+## Prerequisites
+Ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (Latest LTS recommended)
+- [PostgreSQL](https://www.postgresql.org/) (For local setup, but we'll use Neon)
+- [Neon Database Access](https://neon.tech/) (Ask the admin for credentials)
+- [Prisma](https://www.prisma.io/) ORM (Managed by npm)
+
+## Clone the Repository
+```sh
+git clone https://github.com/cambriz902/quiz-app-prototype.git
+cd quiz-app-prototype
+```
+
+## Install Dependencies
+```sh
+npm install
+```
+
+## Set Up Environment Variables
+Create a `.env` file in the root of your project and add the following:
+
+```sh
+DATABASE_URL="postgresql://your_neon_user:your_password@your_neon_host/your_database?sslmode=require"
+```
+
+Ask the admin for a valid `DATABASE_URL`.
+
+## Generate Prisma Client
+```sh
+npx prisma generate
+```
+
+## Start the Development Server
+```sh
+npm run dev
+```
+
+The app should now be running at `http://localhost:3000`.
+
+## Troubleshooting
+If you encounter errors, try:
+1. Checking `.env` and ensuring `DATABASE_URL` is correctly set.
+2. Running `npx prisma generate` again.
+
+### Schema
+Below is a concise summary of the database schema used in this application.
+
+- **User**: Stores user information and their attempted quizzes.
+- **Quiz**: Represents a quiz with a title, description, and associated questions.
+- **Question**: Holds questions belonging to quizzes, including their type (multiple choice or free response).
+- **MultipleChoiceOption**: Stores possible answer choices for multiple-choice questions, including correctness.
+- **UserAttemptedQuiz**: Tracks users' quiz attempts, including scores and completion time.
+- **UserAttemptedQuestionMultipleChoice**: Records users' selected answers for multiple-choice questions.
+- **UserAttemptedQuestionFreeResponse**: Stores users' free response answers, which may be evaluated later.
+
+Below is the schema design for the quiz application:
+
+<img width="710" alt="quiz_schema" src="https://github.com/user-attachments/assets/554ce1fb-8588-4e34-94e7-f1592066c1b9" />
+
 ## Features
 ### Core Quiz Functionality
 - Users can start a quiz.
@@ -48,11 +110,7 @@ The application allows users to **take quizzes**, **answer multiple-choice and f
 - **Batch answer updates when syncing after the user goes back online**.
 - **Before saving an answer, check if the user has already submitted an answer**, and add logic to handle duplicate submissions.
 - Handle quiz timer running out when user is offline.
-
-## End-to-End Test Plan
-
-This test plan outlines test cases for verifying the core functionalities of the Next.js Quiz App. It includes navigation, quiz interactions, submission, results, edge cases, and API testing.
-
+   
 ### Manual Test Plan
 
 #### Home Page Navigation
@@ -83,6 +141,10 @@ This test plan outlines test cases for verifying the core functionalities of the
 **Manual Results:** Passed
 
 ---
+
+## End-to-End Test Plan
+
+This test plan outlines test cases for verifying the core functionalities of the Next.js Quiz App. It includes navigation, quiz interactions, submission, results, edge cases, and API testing.
 
 #### Starting a Quiz
 **Steps:**
