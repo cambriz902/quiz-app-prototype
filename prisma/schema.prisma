@@ -81,7 +81,6 @@ model UserAttemptedQuestionMultipleChoice {
   userAttemptedQuizId       Int
   questionId                Int
   multipleChoiceAnswerId    Int
-  timeSpent                 Int      @default(0) 
   createdAt                 DateTime @default(now())
 
   userAttemptedQuiz UserAttemptedQuiz @relation(fields: [userAttemptedQuizId], references: [id], onDelete: Cascade)
@@ -94,7 +93,6 @@ model UserAttemptedQuestionFreeResponse {
   userAttemptedQuizId Int
   questionId         Int
   answer            String   @db.Text  
-  timeSpent         Int      @default(0) 
   createdAt         DateTime @default(now())
   isCorrect        Boolean  @default(false)
 
