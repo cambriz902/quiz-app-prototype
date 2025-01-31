@@ -1,5 +1,3 @@
-"use client";
-
 import QuizCard from "./QuizCard";
 
 type Quiz = {

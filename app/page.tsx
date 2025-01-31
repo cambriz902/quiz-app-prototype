@@ -14,7 +14,7 @@ export default function HomePage() {
         Test your knowledge with a variety of quizzes. Challenge yourself and learn something new every day!
       </p>
       
-      <button // Maybe should chant to <Link> component
+      <button
         onClick={() => router.push("/quizzes")}
         className="mt-6 px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-lg font-medium transition focus:outline-none focus:ring-4 focus:ring-blue-300"
         role="link"
