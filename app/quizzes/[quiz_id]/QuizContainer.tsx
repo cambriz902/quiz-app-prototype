@@ -39,7 +39,7 @@ export default function QuizContainer({ quiz }: QuizContainerProps) {
     return null;
   };
   
-  const handleSelectedAnswer = (question_id: number, answer: number | string) => {
+  const handleSelectedAnswer = (answer: number | string) => {
     setSelectedAnswer(answer);
   };
 

@@ -4,13 +4,13 @@ import { QuestionModel } from "@/types/question";
 
 type MultipleChoiceProps = {
   question: QuestionModel;
-  setAnswer: (questionId: number, answer: number) => void;
+  setAnswer: (answer: number) => void;
   selectedAnswer: number | null;
 };
 
 export default function MultipleChoice({ question, setAnswer, selectedAnswer }: MultipleChoiceProps) {
   const handleSelect = (id: number) => {
-    setAnswer(question.id, id);
+    setAnswer(id);
   };
 
   return (
