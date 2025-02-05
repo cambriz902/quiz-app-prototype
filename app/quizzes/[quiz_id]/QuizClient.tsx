@@ -47,7 +47,7 @@ export default function QuizClient({ initialQuiz }: QuizClientProps) {
       <StartQuizButton quizId={quiz.id} hasAttempt={!!quiz.userAttempt} onQuizStart={handleQuizStart} />
       {/* Show Latest Attempt if Available */}
       {userAttempt && (
-        <div
+        <button
           onClick={handleAttemptClick}
           className="mt-6 p-4 border rounded-md w-full max-w-md text-center cursor-pointer hover:bg-gray-100"
         >
@@ -56,7 +56,7 @@ export default function QuizClient({ initialQuiz }: QuizClientProps) {
             Completed on: {new Date(userAttempt.quizEndTime).toLocaleDateString()}
           </p>
           <p className="text-gray-700">Score: {userAttempt.score}</p>
-        </div>
+        </button>
       )}
     </div>
   );

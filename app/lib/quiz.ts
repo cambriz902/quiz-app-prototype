@@ -128,6 +128,7 @@ export async function fetchQuizResults(quizId: number, attemptId: number) {
           isCorrect: option.isCorrect,
         })),
         isCorrectFreeResponse: question.type === "free_response" ? userFreeResponse?.isCorrect : null,
+        freeResponseFeedback: question.type === "free_response" ? userFreeResponse?.feedback : null,
         userAnswer: question.type === "multiple_choice" ? userMCAnswer?.multipleChoiceAnswerId : userFreeResponse?.answer,
         wasAttempted: Boolean(userMCAnswer || userFreeResponse),
       };

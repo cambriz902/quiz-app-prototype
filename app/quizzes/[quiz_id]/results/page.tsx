@@ -80,17 +80,20 @@ export default async function QuizResultsPage({
                   })}
                 </div>
               ) : (
-                <div
-                  className={`mt-3 p-3 border rounded-lg text-lg ${
-                    isUnanswered
-                      ? "bg-gray-100 border-yellow-300 italic"
-                      : question.isCorrectFreeResponse
-                      ? "bg-green-200 border-green-500"
-                      : "bg-red-200 border-red-500"
-                  }`}
-                >
-                  <p><strong>Your Answer:</strong> {question.userAnswer || "No answer given"}</p>
-                </div>
+                <>
+                  <h3>{question.freeResponseFeedback}</h3>
+                  <div
+                    className={`mt-3 p-3 border rounded-lg text-lg ${
+                      isUnanswered
+                        ? "bg-gray-100 border-yellow-300 italic"
+                        : question.isCorrectFreeResponse
+                        ? "bg-green-200 border-green-500"
+                        : "bg-red-200 border-red-500"
+                    }`}
+                  >
+                    <p><strong>Your Answer:</strong> {question.userAnswer || "No answer given"}</p>
+                  </div>
+                </>
               )}
             </div>
           );

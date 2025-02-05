@@ -27,7 +27,7 @@ export default function QuestionNav({
   const [isSyncing, setIsSyncing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // ✅ Try to sync pending answers in the background when online
+  // Try to sync pending answers in the background when online
   useEffect(() => {
     if (!isOffline) {
       setIsSyncing(true);

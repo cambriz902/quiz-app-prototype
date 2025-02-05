@@ -23,23 +23,16 @@ export default function QuizContainer({ quiz }: QuizContainerProps) {
   const userAttempt = quiz.userAttempt;
 
   useEffect(() => {
-    if (!userAttempt) {
-      router.push(`/quizzes/${quiz.id}`);
-      return;
-    }
-  }, [userAttempt, quiz.id, router]);
-
-  useEffect(() => {
     if (!quiz) return;
     const nextQuestionIndex = quiz.questions.findIndex((q) => !q.attempted);
     setCurrentIndex(nextQuestionIndex !== -1 ? nextQuestionIndex : 0);
   }, [quiz]);
 
-  if (!quiz || !userAttempt) {
+  if (!userAttempt) {
     return null;
   };
   
-  const handleSelectedAnswer = (question_id: number, answer: number | string) => {
+  const handleSelectedAnswer = (answer: number | string) => {
     setSelectedAnswer(answer);
   };
 

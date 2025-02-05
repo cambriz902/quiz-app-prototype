@@ -5,7 +5,7 @@ type FreeResponseProps = {
     id: number;
     text: string;
   };
-  setAnswer: (questionId: number, answer: string) => void;
+  setAnswer: (answer: string) => void;
   answer: string | null;
 };
 
@@ -16,7 +16,7 @@ export default function FreeResponse({ question, setAnswer, answer }: FreeRespon
       <textarea
         className="w-full mt-4 p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 text-lg shadow-sm"
         value={answer || ""}
-        onChange={(e) => setAnswer(question.id, e.target.value)}
+        onChange={(e) => setAnswer(e.target.value)}
         placeholder="Type your answer here..."
         rows={4}
       />

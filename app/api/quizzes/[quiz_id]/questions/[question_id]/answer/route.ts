@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { NextRequest } from "next/server";
+import { OpenAIResponseFormat } from "@/lib/openaiTypes";
 
 export async function POST(
   req: NextRequest, 
@@ -15,6 +16,7 @@ export async function POST(
       where: { id: questionId },
       select: {
         type: true,
+        text: true,
         multipleChoiceOptions: {
           where: { isCorrect: true },
           select: { id: true },
@@ -51,11 +53,31 @@ export async function POST(
 
         await tx.userAttemptedQuestionMultipleChoice.create({ data: answerData });
       } else {
-        isCorrect = true; // Free response is assumed correct for now
+        // openai check
+        const url = `${req.nextUrl.origin}/api/check-free-response-answer`;
+        const gradingResponse = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userAnswer: selectedAnswer,
+            questionText: question.text,
+            questionContext: selectedAnswer,
+          }),
+        });
+
+        if (!gradingResponse.ok) {
+          throw new Error('Network response was not ok');
+        }
+      
+        // Parse the JSON response
+        const data: OpenAIResponseFormat = await gradingResponse.json();
+
+        isCorrect = data.isCorrect; 
         answerData = {
           userAttemptedQuizId: attemptId,
           questionId,
           answer: selectedAnswer.toString(),
+          feedback: data.feedback,
           isCorrect,
         };
 
