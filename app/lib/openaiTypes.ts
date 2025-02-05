@@ -6,6 +6,6 @@ export const OpenAIResponseSchema = z.object({
 });
 
 export interface OpenAIResponseFormat {
-  answer: string;
+  feedback: string;
   isCorrect: boolean;
 }

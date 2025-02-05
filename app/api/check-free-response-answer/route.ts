@@ -7,7 +7,6 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('req:', req)
     const { userAnswer, questionText, questionContext } = await req.json();
 
     if (!userAnswer || !questionText || !questionContext) {
@@ -38,7 +37,6 @@ export async function POST(req: NextRequest) {
       throw new Error("Response content is null");
     }
     const parsedResponse: OpenAIResponseFormat = JSON.parse(content);
-
     return NextResponse.json(parsedResponse);
   } catch (error) {
     console.error("Error evaluating answer:", error);
