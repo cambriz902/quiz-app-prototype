@@ -89,6 +89,24 @@ Below is the schema design for the quiz application:
 - Uses **Neon PostgreSQL** for relational data storage.
 - **Handles quiz time expiration** and redirect to results.
 
+### AI-Powered Free Response Grading
+
+The application uses OpenAI's GPT-4 model to provide intelligent grading of free response questions. The grading system works as follows:
+
+#### Implementation Details
+
+1. When a student submits a free response answer, the application sends:
+   - The question text
+   - The student's answer
+   - Relevant context about the question
+
+2. The AI evaluator (GPT-4) acts as a teacher and:
+   - Compares the student's answer against the question and context
+   - Determines if the answer is correct
+   - Provides helpful feedback for incorrect answers
+   - Returns a structured JSON response
+
+
 ### API Endpoints
 - `POST /api/quizzes/[quiz_id]/start` → Start a new quiz attempt.
 - `POST /api/quizzes/[quiz_id]/questions/[question_id]/answer` → Submit an answer.
