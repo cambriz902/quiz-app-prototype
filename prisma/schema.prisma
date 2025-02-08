@@ -27,6 +27,8 @@ model Quiz {
   author      User @relation(fields: [authorId], references: [id], onDelete: Cascade)
   questions   Question[]
   userAttempts UserAttemptedQuiz[]
+
+  QuizHasTopic QuizHasTopic[]
 }
 
 enum QuestionType {
@@ -99,4 +101,22 @@ model UserAttemptedQuestionFreeResponse {
 
   userAttemptedQuiz UserAttemptedQuiz @relation(fields: [userAttemptedQuizId], references: [id], onDelete: Cascade)
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Topic {
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(255)
+  createdAt DateTime @default(now())
+
+  QuizHasTopic QuizHasTopic[]
+}
+
+model QuizHasTopic {
+  id Int @id @default(autoincrement())
+  quizId Int
+  topicId Int
+  createdAt DateTime @default(now())
+
+  quiz Quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  topic Topic @relation(fields: [topicId], references: [id], onDelete: Cascade)
 }
