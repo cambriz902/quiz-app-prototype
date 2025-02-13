@@ -1,6 +1,5 @@
 import { fetchQuizzes } from "@/lib/quiz";
 import QuizzesList from "./QuizzesList";
-import RedirectButton from "../components/RedirectButton";
 
 export default async function QuizzesPage() {
   const quizzes = await fetchQuizzes();
@@ -13,7 +12,6 @@ export default async function QuizzesPage() {
       <p className="text-lg text-gray-600 text-center max-w-3xl mx-auto mt-4">
         Select a quiz below and start testing your knowledge!
       </p>
-      <RedirectButton text="Create Quiz" route="/quizzes/create" />
       <QuizzesList quizzes={quizzes} />
     </main>
   );

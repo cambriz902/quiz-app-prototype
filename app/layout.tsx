@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import "./globals.css";
 
+import NavBar from "@/components/NavBar";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Quiz App",
@@ -14,9 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <html lang="en">
-        <body className="bg-white text-gray-900">{children}</body>
-      </html>
+      <body className="bg-white text-gray-900">
+        <NavBar />
+        {children}  
+      </body>
     </html>
   );
 }
