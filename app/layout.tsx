@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import "./globals.css";
+
 import NavBar from "@/components/NavBar";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Quiz App",
