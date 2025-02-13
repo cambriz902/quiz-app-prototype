@@ -18,6 +18,7 @@ const MultipleChoiceOptionSchema = z.object({
 const QuestionSchema = z.object({
   type: z.enum(["multiple_choice", "free_response"]),
   text: z.string(),
+  referenceText: z.string(),
   multipleChoiceOptions: MultipleChoiceOptionSchema.array(),
 });
 
@@ -33,10 +34,11 @@ export interface OpenAIQuizResponseFormat {
   questions: {
     type: "multiple_choice" | "free_response";
     text: string;
+    referenceText: string;
     multipleChoiceOptions: {
       text: string;
       isCorrect: boolean;
       
-    }[];
+    }[] | null;
   }[];
 }

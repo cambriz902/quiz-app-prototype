@@ -2,7 +2,6 @@ import { fetchQuizzes } from "@/lib/quiz";
 import QuizzesList from "./QuizzesList";
 import RedirectButton from "../components/RedirectButton";
 
-
 export default async function QuizzesPage() {
   const quizzes = await fetchQuizzes();
 
