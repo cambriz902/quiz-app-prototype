@@ -17,6 +17,7 @@ export async function POST(
       select: {
         type: true,
         text: true,
+        referenceText: true,
         multipleChoiceOptions: {
           where: { isCorrect: true },
           select: { id: true },
@@ -61,7 +62,7 @@ export async function POST(
           body: JSON.stringify({
             userAnswer: selectedAnswer,
             questionText: question.text,
-            questionContext: selectedAnswer,
+            questionContext: question.referenceText,
           }),
         });
 

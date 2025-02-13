@@ -1,9 +1,11 @@
 import { OpenAIQuizResponseFormat } from "@/lib/openaiTypes";
-import prisma from "@/lib/prisma";  // Assuming you have Prisma set up
+import prisma from "@/lib/prisma";  
 
 export async function createQuizFromOpenAI(quizData: OpenAIQuizResponseFormat, userId: number) {
   try {
-    // Create the quiz and its related questions + choices in a transaction
+    /**
+     * TODO: Split question creation into multiple queries for large number of questions 
+     * */
     const quiz = await prisma.$transaction(async (tx) => {
       // Create the quiz first
       const quiz = await tx.quiz.create({
@@ -16,9 +18,10 @@ export async function createQuizFromOpenAI(quizData: OpenAIQuizResponseFormat, u
             create: quizData.questions.map((question) => ({
               text: question.text,
               type: question.type,
-              // Create choices for each question
+              referenceText: question.referenceText,
+              // Create choices for each question if it's a multiple choice question
               multipleChoiceOptions: {
-                create: question.multipleChoiceOptions.map((choice) => ({
+                create: question.multipleChoiceOptions?.map((choice) => ({
                   value: choice.text,
                   isCorrect: choice.isCorrect,
                 })),
@@ -27,13 +30,9 @@ export async function createQuizFromOpenAI(quizData: OpenAIQuizResponseFormat, u
           },
         },
         // Include related data in the return value
-        include: {
-          questions: {
-            include: {
-              multipleChoiceOptions: true,
-            },
-          },
-        },
+        select: {
+          id: true,
+        }
       });
 
       return quiz;
