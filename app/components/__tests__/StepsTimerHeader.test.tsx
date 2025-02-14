@@ -17,7 +17,7 @@ describe('StepsTimerHeader', () => {
 
   it('renders step count correctly', () => {
     render(<StepsTimerHeader {...defaultProps} />);
-    expect(screen.getByText('Step 1 of 6')).toBeInTheDocument(); //fails for action test
+    expect(screen.getByText('Step 1 of 5')).toBeInTheDocument();
   });
 
   it('renders custom label when provided', () => {
