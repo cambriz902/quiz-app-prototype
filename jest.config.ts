@@ -10,6 +10,9 @@ const config: Config = {
   coverageProvider: 'v8',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/app/$1',  // This maps @/ to app/ directory
+  },
 }
  
 export default createJestConfig(config)
