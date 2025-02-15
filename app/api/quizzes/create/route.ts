@@ -10,11 +10,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const quizResponse = await generateQuiz({
+    const quizResponse = await generateQuiz(
       topic,
       numMultipleChoiceQuestions,
       numFreeResponseQuestions
-    });
+    );
     const quiz = await createQuizFromOpenAI(quizResponse, 1);
 
     return NextResponse.json({ quizId: quiz.id });

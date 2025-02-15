@@ -116,19 +116,12 @@ interface QuizUpdateData {
   durationInSeconds?: number;
 }
 
-interface UpdateProgressOptions {
-  tx: Prisma.TransactionClient;
-  attempt: QuizAttemptForGrading;
-  isCorrect: boolean;
-  isLastQuestion: boolean;
-}
-
-export async function updateQuizProgress({
-  tx,
-  attempt,
-  isCorrect,
-  isLastQuestion
-}: UpdateProgressOptions) {
+export async function updateQuizProgress(
+  tx: Prisma.TransactionClient,
+  attempt: QuizAttemptForGrading,
+  isCorrect: boolean,
+  isLastQuestion: boolean
+) {
   const totalCorrect = attempt.correct + (isCorrect ? 1 : 0);
   const totalIncorrect = attempt.incorrect + (isCorrect ? 0 : 1);
   const totalAnswered = totalCorrect + totalIncorrect;

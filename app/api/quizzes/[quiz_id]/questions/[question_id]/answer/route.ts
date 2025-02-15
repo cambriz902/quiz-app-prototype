@@ -35,14 +35,14 @@ export async function POST(
     // Grade the answer
     const { isCorrect, feedback } = await gradeAnswer(question, selectedAnswer);
     // Save answer and update progress
-    await saveAnswerAndUpdateProgress({
+    await saveAnswerAndUpdateProgress(
       question,
       attempt,
       selectedAnswer,
       isCorrect,
-      feedback,
-      isLastQuestion
-    });
+      isLastQuestion,
+      feedback
+    );
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -60,30 +60,21 @@ async function gradeAnswer(question: QuestionWithOptions, answer: string): Promi
     };
   }
 
-  return await checkFreeResponseAnswer({
-    userAnswer: answer,
-    questionText: question.text,
-    referenceText: question.referenceText || ""
-  });
+  return await checkFreeResponseAnswer(
+    answer,
+    question.text,
+    question.referenceText || ""
+  );
 }
 
-interface SaveAnswerParams {
-  question: QuestionWithOptions;
-  attempt: QuizAttemptForGrading;
-  selectedAnswer: string;
-  isCorrect: boolean;
-  feedback?: string;
-  isLastQuestion: boolean;
-} 
-
-async function saveAnswerAndUpdateProgress({
-  question,
-  attempt,
-  selectedAnswer,
-  isCorrect,
-  feedback,
-  isLastQuestion
-}: SaveAnswerParams) {
+async function saveAnswerAndUpdateProgress(
+  question: QuestionWithOptions,
+  attempt: QuizAttemptForGrading,
+  selectedAnswer: string,
+  isCorrect: boolean,
+  isLastQuestion: boolean,
+  feedback?: string
+) {
   await prisma.$transaction(async (tx) => {
     // Save the answer
     await saveQuestionAnswer({
@@ -97,11 +88,11 @@ async function saveAnswerAndUpdateProgress({
     });
 
     // Update quiz progress
-    await updateQuizProgress({
+    await updateQuizProgress(
       tx,
       attempt,
       isCorrect,
       isLastQuestion
-    });
+    );
   });
 }

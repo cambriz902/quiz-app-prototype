@@ -9,18 +9,11 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { getQuizCreationPrompt } from "@/lib/prompts/quizCreationPrompt";
 import { getAnswerGradingPrompt } from "@/lib/prompts/answerGradingPrompt";
 
-
-interface GenerateQuizOptions {
-  topic: string;
-  numMultipleChoiceQuestions: number;
-  numFreeResponseQuestions: number;
-}
-
-export async function generateQuiz({
-  topic,
-  numMultipleChoiceQuestions,
-  numFreeResponseQuestions
-}: GenerateQuizOptions): Promise<OpenAIQuizResponseFormat> {
+export async function generateQuiz(
+  topic: string,
+  numMultipleChoiceQuestions: number,
+  numFreeResponseQuestions: number
+): Promise<OpenAIQuizResponseFormat> {
   
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   const systemPrompt = getQuizCreationPrompt(numMultipleChoiceQuestions, numFreeResponseQuestions, topic);
@@ -51,17 +44,11 @@ export async function generateQuiz({
   return JSON.parse(content);
 }
 
-interface CheckAnswerParams {
-  userAnswer: string;
-  questionText: string;
-  referenceText: string;
-}
-
-export async function checkFreeResponseAnswer({
-  userAnswer,
-  questionText,
-  referenceText
-}: CheckAnswerParams): Promise<OpenAIResponseFormat> {
+export async function checkFreeResponseAnswer(
+  userAnswer: string,
+  questionText: string,
+  referenceText: string
+): Promise<OpenAIResponseFormat> {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
   const response = await openai.chat.completions.create({
