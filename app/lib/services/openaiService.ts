@@ -16,7 +16,7 @@ export async function generateQuiz(
 ): Promise<OpenAIQuizResponseFormat> {
   
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  const systemPrompt = getQuizCreationPrompt(numMultipleChoiceQuestions, numFreeResponseQuestions, topic);
+  const systemPrompt = getQuizCreationPrompt();
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     response_format: zodResponseFormat(OpenAIQuizResponseSchema, "quiz_creation"),

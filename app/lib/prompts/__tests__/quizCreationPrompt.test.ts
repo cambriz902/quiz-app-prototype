@@ -1,38 +1,29 @@
 import { getQuizCreationPrompt } from '../quizCreationPrompt';
 
 describe('getQuizCreationPrompt', () => {
-  it('includes the correct number of multiple choice questions', () => {
-    const prompt = getQuizCreationPrompt(3, 2, 'JavaScript');
-    expect(prompt).toContain('3 multiple choice questions');
+  const prompt = getQuizCreationPrompt();
+
+  it('includes input format specification', () => {
+    expect(prompt).toContain('"topic": string');
+    expect(prompt).toContain('"numMultipleChoiceQuestions": number');
+    expect(prompt).toContain('"numFreeResponseQuestions": number');
   });
 
-  it('includes the correct number of free response questions', () => {
-    const prompt = getQuizCreationPrompt(3, 2, 'JavaScript');
-    expect(prompt).toContain('2 free response questions');
-  });
-
-  it('includes the specified topic', () => {
-    const prompt = getQuizCreationPrompt(3, 2, 'JavaScript');
-    expect(prompt).toContain('about JavaScript');
-  });
-
-  it('includes instructions for multiple choice questions', () => {
-    const prompt = getQuizCreationPrompt(1, 1, 'Python');
+  it('includes multiple choice question requirements', () => {
     expect(prompt).toContain('Provide exactly 4 options');
     expect(prompt).toContain('EXACTLY ONE option is marked as correct');
     expect(prompt).toContain('Make distractors (wrong answers) plausible');
   });
 
-  it('includes instructions about reference text', () => {
-    const prompt = getQuizCreationPrompt(1, 1, 'Python');
+  it('includes reference text requirements', () => {
     expect(prompt).toContain('reference text');
-    expect(prompt).toContain('For multiple choice questions: Provides a detailed explanation');
-    expect(prompt).toContain('For free response questions: Contains comprehensive reference information');
+    expect(prompt).toContain('detailed explanation of why the correct answer is right');
+    expect(prompt).toContain('evaluate student answers using RAG');
   });
 
-  it('handles zero questions gracefully', () => {
-    const prompt = getQuizCreationPrompt(0, 0, 'React');
-    expect(prompt).toContain('0 multiple choice questions');
-    expect(prompt).toContain('0 free response questions');
+  it('specifies response format', () => {
+    expect(prompt).toContain('"title": string');
+    expect(prompt).toContain('"description": string');
+    expect(prompt).toContain('"questions": Question[]');
   });
 }); 

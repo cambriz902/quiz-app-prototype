@@ -1,5 +1,5 @@
 import 'openai/shims/node';
-import { generateQuiz } from '../openaiService';
+import { checkFreeResponseAnswer, generateQuiz } from '../openaiService';
 import OpenAI from 'openai';
 
 jest.mock('openai', () => {
@@ -28,6 +28,7 @@ jest.mock('openai', () => {
   });
 
   const MockOpenAI = jest.fn().mockImplementation(() => ({
+    apiKey: 'test-key',
     chat: {
       completions: {
         create: mockCreate
@@ -42,7 +43,7 @@ jest.mock('openai', () => {
   };
 });
 
-describe('openaiService', () => {
+describe('generateQuiz', () => {
 
   beforeEach(() => {
     // Clear all mocks before each test
@@ -99,5 +100,111 @@ describe('openaiService', () => {
     await expect(generateQuiz('JavaScript', 1, 0))
       .rejects
       .toThrow('API Error');
+  });
+});
+
+describe('checkFreeResponseAnswer', () => {
+  const mockOpenAIResponse = {
+    choices: [{
+      message: {
+        content: JSON.stringify({
+          isCorrect: true,
+          feedback: "Good answer! Consider adding more detail about X."
+        })
+      }
+    }]
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('calls OpenAI with correct parameters', async () => {
+    const mockCreate = jest.fn().mockResolvedValue(mockOpenAIResponse);
+    jest.mocked(OpenAI).mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: mockCreate
+        }
+      }
+    } as unknown as OpenAI));
+
+    await checkFreeResponseAnswer(
+      "Test answer",
+      "What is X?",
+      "X is a concept that..."
+    );
+
+    expect(mockCreate).toHaveBeenCalledWith(expect.objectContaining({
+      model: "gpt-4o-mini",
+      messages: expect.arrayContaining([
+        {
+          role: "system",
+          content: expect.stringContaining("AI tutor grading")
+        },
+        {
+          role: "user",
+          content: expect.stringContaining("Test answer")
+        }
+      ])
+    }));
+  });
+
+  it('returns parsed response when successful', async () => {
+    jest.mocked(OpenAI).mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: jest.fn().mockResolvedValue(mockOpenAIResponse)
+        }
+      }
+    } as unknown as OpenAI));
+
+    const result = await checkFreeResponseAnswer(
+      "Test answer",
+      "What is X?",
+      "X is a concept that..."
+    );
+
+    expect(result).toEqual({
+      isCorrect: true,
+      feedback: "Good answer! Consider adding more detail about X."
+    });
+  });
+
+  it('throws error when response content is null', async () => {
+    jest.mocked(OpenAI).mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: jest.fn().mockResolvedValue({
+            choices: [{ message: { content: null } }]
+          })
+        }
+      }
+    } as unknown as OpenAI));
+
+    await expect(checkFreeResponseAnswer(
+      "Test answer",
+      "What is X?",
+      "X is a concept that..."
+    )).rejects.toThrow('Response content is null');
+  });
+
+  it('throws error when response is invalid JSON', async () => {
+    jest.mocked(OpenAI).mockImplementation(() => ({
+      apiKey: 'test-key',
+      chat: {
+        completions: {
+          create: jest.fn().mockResolvedValue({
+            choices: [{ message: { content: 'Invalid JSON' } }]
+          })
+        }
+      }
+    } as unknown as OpenAI));
+
+    await expect(checkFreeResponseAnswer(
+      "Test answer",
+      "What is X?",
+      "X is a concept that..."
+    )).rejects.toThrow();
   });
 }); 
