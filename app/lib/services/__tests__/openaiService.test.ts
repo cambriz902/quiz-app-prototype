@@ -50,7 +50,11 @@ describe('openaiService', () => {
   });
 
   it('generates a quiz successfully', async () => {
-    const quiz = await generateQuiz('JavaScript', 1, 0);
+    const quiz = await generateQuiz({
+      topic: 'JavaScript',
+      numMultipleChoiceQuestions: 1,
+      numFreeResponseQuestions: 0
+    });
     
     expect(quiz).toBeDefined();
     expect(quiz.title).toBe('JavaScript Basics');
@@ -59,7 +63,11 @@ describe('openaiService', () => {
   });
 
   it('calls OpenAI with correct parameters', async () => {
-    await generateQuiz('JavaScript', 2, 1);
+    await generateQuiz({
+      topic: 'JavaScript',
+      numMultipleChoiceQuestions: 2,
+      numFreeResponseQuestions: 1
+    });
     
     const mockCreate = (new OpenAI().chat.completions.create) as jest.Mock;
     const createCall = mockCreate.mock.calls[0][0];
@@ -83,7 +91,11 @@ describe('openaiService', () => {
 
     (OpenAI as jest.MockedClass<typeof OpenAI>).mockImplementation(() => mockOpenAI);
 
-    await expect(generateQuiz('JavaScript', 1, 0))
+    await expect(generateQuiz({
+      topic: 'JavaScript',
+      numMultipleChoiceQuestions: 1,
+      numFreeResponseQuestions: 0
+    }))
       .rejects
       .toThrow('Response content is null');
   });
@@ -96,7 +108,11 @@ describe('openaiService', () => {
 
     (OpenAI as jest.MockedClass<typeof OpenAI>).mockImplementation(() => mockOpenAI);
 
-    await expect(generateQuiz('JavaScript', 1, 0))
+    await expect(generateQuiz({
+      topic: 'JavaScript',
+      numMultipleChoiceQuestions: 1,
+      numFreeResponseQuestions: 0
+    }))
       .rejects
       .toThrow('API Error');
   });

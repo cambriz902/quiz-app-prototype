@@ -1,46 +1,153 @@
 import { OpenAIQuizResponseFormat } from "@/lib/openaiTypes";
 import prisma from "@/lib/prisma";  
+import { QuestionType, Prisma } from "@prisma/client";
+import { QuizAttemptForGrading } from "@/lib/types/attempts";
 
+
+/**
+ * TODO: If this is taking too long to execute, we can crate a job
+ * and email the user a link to the quiz once it's ready
+ */
+
+/**
+ * Creates a quiz from OpenAI response format and returns the quiz object
+ * @param quizData - Quiz data from OpenAI to create a quiz and questions
+ * @param userId - User ID
+ * @returns Quiz object
+ */
 export async function createQuizFromOpenAI(quizData: OpenAIQuizResponseFormat, userId: number) {
   try {
-    /**
-     * TODO: Split question creation into multiple queries for large number of questions 
-     * */
-    const quiz = await prisma.$transaction(async (tx) => {
-      // Create the quiz first
+    return await prisma.$transaction(async (tx) => {
+      // Create the quiz
       const quiz = await tx.quiz.create({
         data: {
           title: quizData.title,
           authorId: userId,
           description: quizData.description,
-          // Create the questions and choices in a transaction
-          questions: {
-            create: quizData.questions.map((question) => ({
-              text: question.text,
-              type: question.type,
-              referenceText: question.referenceText,
-              // Create choices for each question if it's a multiple choice question
-              multipleChoiceOptions: {
-                create: question.multipleChoiceOptions?.map((choice) => ({
-                  value: choice.text,
-                  isCorrect: choice.isCorrect,
-                })),
-              },
-            })),
-          },
         },
-        // Include related data in the return value
         select: {
           id: true,
         }
       });
 
+      // Create questions in batches
+      const batchSize = 5;
+      try {
+        for (let i = 0; i < quizData.questions.length; i += batchSize) {
+          const questionsBatch = quizData.questions.slice(i, i + batchSize);
+          
+          // Create each question and its options
+          for (const question of questionsBatch) {
+            await tx.question.create({
+              data: {
+                quizId: quiz.id,
+                text: question.text,
+                type: question.type,
+                referenceText: question.referenceText,
+                multipleChoiceOptions: question.type === 'multiple_choice' ? {
+                  create: question.multipleChoiceOptions?.map(option => ({
+                    isCorrect: option.isCorrect,
+                    value: option.text
+                  }))
+                } : undefined
+              }
+            });
+          }
+        }
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        throw new Error(`Failed to create questions: ${message}`);
+      }
       return quiz;
+    }, {
+      timeout: 10000,
+      maxWait: 5000,
     });
-
-    return quiz;
   } catch (error) {
     console.error("Error creating quiz:", error);
     throw new Error("Failed to create quiz in database");
   }
+}
+
+interface SaveAnswerOptions {
+  tx: Prisma.TransactionClient;
+  questionType: QuestionType;
+  attemptId: number;
+  questionId: number;
+  answer: string;
+  isCorrect: boolean;
+  feedback?: string;
+}
+
+export async function saveQuestionAnswer({
+  tx,
+  questionType,
+  attemptId,
+  questionId,
+  answer,
+  isCorrect,
+  feedback
+}: SaveAnswerOptions) {
+  if (questionType === QuestionType.multiple_choice) {
+    await tx.userAttemptedQuestionMultipleChoice.create({
+      data: {
+        userAttemptedQuizId: attemptId,
+        questionId,
+        multipleChoiceAnswerId: Number(answer),
+      }
+    });
+  } else {
+    await tx.userAttemptedQuestionFreeResponse.create({
+      data: {
+        userAttemptedQuizId: attemptId,
+        questionId,
+        answer: answer.toString(),
+        feedback,
+        isCorrect,
+      }
+    });
+  }
+}
+
+interface QuizUpdateData {
+  correct: number;
+  incorrect: number;
+  score: number;
+  durationInSeconds?: number;
+}
+
+interface UpdateProgressOptions {
+  tx: Prisma.TransactionClient;
+  attempt: QuizAttemptForGrading;
+  isCorrect: boolean;
+  isLastQuestion: boolean;
+}
+
+export async function updateQuizProgress({
+  tx,
+  attempt,
+  isCorrect,
+  isLastQuestion
+}: UpdateProgressOptions) {
+  const totalCorrect = attempt.correct + (isCorrect ? 1 : 0);
+  const totalIncorrect = attempt.incorrect + (isCorrect ? 0 : 1);
+  const totalAnswered = totalCorrect + totalIncorrect;
+  const newScore = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+
+  const updateData: QuizUpdateData = {
+    correct: totalCorrect,
+    incorrect: totalIncorrect,
+    score: newScore,
+  };
+
+  if (isLastQuestion) {
+    updateData.durationInSeconds = Math.floor(
+      (Date.now() - new Date(attempt.createdAt).getTime()) / 1000
+    );
+  }
+
+  await tx.userAttemptedQuiz.update({
+    where: { id: attempt.id },
+    data: updateData,
+  });
 }
