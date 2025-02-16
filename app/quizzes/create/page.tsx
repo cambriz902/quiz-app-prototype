@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
+import { QuestionMarkCircleIcon } from '@heroicons/react/24/outline'
 
 const Page = () => {
   const [topic, setTopic] = useState("");
@@ -12,6 +14,7 @@ const Page = () => {
 
   const handleCreateQuiz = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     setIsCreatingQuiz(true);
     try {
       const response = await fetch("/api/quizzes/create", {
@@ -27,6 +30,8 @@ const Page = () => {
     }
   }
 
+  const enableSubmitButton = topic && (numMultipleChoiceQuestions > 0 || numFreeResponseQuestions > 0);
+
   return (
     <main className="container mx-auto px-6 py-12 min-h-screen flex flex-col items-center justify-center">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
@@ -39,14 +44,40 @@ const Page = () => {
         
         <form onSubmit={handleCreateQuiz} className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="topic" className="block text-sm font-medium text-gray-700">
-              Topic
-            </label>
+            <div className="flex items-center gap-2">
+              <label htmlFor="topic" className="block text-sm font-medium text-gray-700">
+                Topic:
+              </label>
+              <Popover className="relative">
+                <PopoverButton
+                  className="flex items-center text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-full"
+                  data-testid="topic-help-button"
+                >
+                  <QuestionMarkCircleIcon className="h-4 w-4" aria-hidden="true" />
+                </PopoverButton>
+
+                <PopoverPanel className="absolute z-10 w-72 bottom-8 left-0">
+                  <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
+                    <div className="p-4 bg-white">
+                      <p className="text-sm font-medium text-gray-900">Tips for a better quiz:</p>
+                      <div className="mt-2 text-sm text-gray-500">
+                        <ul className="list-disc pl-4 space-y-1">
+                          <li>Be specific about your topic</li>
+                          <li>Include the subject area (e.g., &ldquo;History&rdquo;, &ldquo;Science&rdquo;)</li>
+                          <li>Add a time period if relevant</li>
+                          <li>Example: &ldquo;World War II Pacific Theater 1941-1945&rdquo; instead of just &ldquo;World War II&rdquo;</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </PopoverPanel>
+              </Popover>
+            </div>
             <input
               type="text"
               value={topic}
               id="topic"
-              placeholder="Enter a topic for your quiz"
+              placeholder="Enter a specific topic for your quiz"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setTopic(e.target.value)}
             />
@@ -54,7 +85,7 @@ const Page = () => {
 
           <div className="space-y-2">
             <label htmlFor="numMultipleChoiceQuestions" className="block text-sm font-medium text-gray-700">
-              Number of Multiple Choice Questions
+              Multiple Choice Questions:
             </label>
             <input
               type="number"
@@ -68,7 +99,7 @@ const Page = () => {
 
           <div className="space-y-2">
             <label htmlFor="numFreeResponseQuestions" className="block text-sm font-medium text-gray-700">
-              Number of Free Response Questions
+              Free Response Questions:
             </label>
             <input
               type="number"
@@ -83,7 +114,7 @@ const Page = () => {
           <button
             className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             type="submit"
-            disabled={isCreatingQuiz}
+            disabled={isCreatingQuiz || !enableSubmitButton}
           >
             {isCreatingQuiz ? "Creating Quiz..." : "Create Quiz"}
           </button>
