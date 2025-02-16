@@ -11,6 +11,8 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.0",
+    "@heroicons/react": "^2.2.0",
     "@prisma/client": "^6.2.1",
     "next": "15.1.6",
     "openai": "^4.81.0",
