@@ -3,7 +3,15 @@ import { checkFreeResponseAnswer, generateQuiz } from '../openaiService';
 import OpenAI from 'openai';
 
 jest.mock('openai', () => {
-  const mockCreate = jest.fn().mockResolvedValue({
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => ({})),
+    OpenAI: jest.fn().mockResolvedValue({})
+  };
+});
+
+describe('generateQuiz', () => {
+  const mockOpenAIResponse = {
     choices: [{
       message: {
         content: JSON.stringify({
@@ -25,32 +33,22 @@ jest.mock('openai', () => {
         })
       }
     }]
-  });
-
-  const MockOpenAI = jest.fn().mockImplementation(() => ({
-    apiKey: 'test-key',
-    chat: {
-      completions: {
-        create: mockCreate
-      }
-    }
-  }));
-
-  return {
-    __esModule: true,
-    default: MockOpenAI,
-    OpenAI: MockOpenAI
-  };
-});
-
-describe('generateQuiz', () => {
-
+  }
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks(); 
   });
 
   it('generates a quiz successfully', async () => {
+    const mockCreate = jest.fn().mockResolvedValue(mockOpenAIResponse);
+    jest.mocked(OpenAI).mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: mockCreate
+        }
+      }
+    } as unknown as OpenAI));
+
     const quiz = await generateQuiz('JavaScript', 1, 0);
     
     expect(quiz).toBeDefined();
