@@ -1,4 +1,3 @@
-import 'openai/shims/node';
 import { checkFreeResponseAnswer, generateQuiz } from '../openaiService';
 import OpenAI from 'openai';
 
