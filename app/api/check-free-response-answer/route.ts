@@ -3,10 +3,11 @@ import OpenAI from "openai";
 import { OpenAIResponseFormat, OpenAIResponseSchema } from "@/lib/openaiTypes";
 import { zodResponseFormat } from "openai/helpers/zod";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function POST(req: NextRequest) {
   try {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
     const { userAnswer, questionText, questionContext } = await req.json();
 
     if (!userAnswer || !questionText || !questionContext) {

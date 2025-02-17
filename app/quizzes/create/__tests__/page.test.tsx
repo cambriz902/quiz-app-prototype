@@ -81,4 +81,35 @@ describe('Create Quiz Page', () => {
       expect(mockRouter.push).toHaveBeenCalledWith(`/quizzes/${mockQuizId}`)
     })
   })
+
+  it('limits multiple choice questions to 10', () => {
+    render(<Page />)
+    
+    const mcInput = screen.getByLabelText(/Multiple Choice Questions/i)
+    fireEvent.change(mcInput, { target: { value: '15' } })
+    
+    expect(mcInput).toHaveValue(10)
+  })
+
+  it('limits free response questions to 2', () => {
+    render(<Page />)
+    
+    const frInput = screen.getByLabelText(/Free Response Questions/i)
+    fireEvent.change(frInput, { target: { value: '5' } })
+    
+    expect(frInput).toHaveValue(2)
+  })
+
+  it('prevents negative numbers for questions', () => {
+    render(<Page />)
+    
+    const mcInput = screen.getByLabelText(/Multiple Choice Questions/i)
+    const frInput = screen.getByLabelText(/Free Response Questions/i)
+    
+    fireEvent.change(mcInput, { target: { value: '-1' } })
+    fireEvent.change(frInput, { target: { value: '-1' } })
+    
+    expect(mcInput).toHaveValue(0)
+    expect(frInput).toHaveValue(0)
+  })
 }) 

@@ -85,29 +85,33 @@ const Page = () => {
 
           <div className="space-y-2">
             <label htmlFor="numMultipleChoiceQuestions" className="block text-sm font-medium text-gray-700">
-              Multiple Choice Questions:
+              Multiple Choice Questions (max 10):
             </label>
             <input
               type="number"
               value={numMultipleChoiceQuestions}
               id="numMultipleChoiceQuestions"
+              min="0"
+              max="10"
               placeholder="Enter the number of multiple choice questions"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              onChange={(e) => setNumMultipleChoiceQuestions(Number(e.target.value))}
+              onChange={(e) => setNumMultipleChoiceQuestions(Math.min(10, Math.max(0, Number(e.target.value))))}
             />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="numFreeResponseQuestions" className="block text-sm font-medium text-gray-700">
-              Free Response Questions:
+              Free Response Questions (max 2):
             </label>
             <input
               type="number"
               value={numFreeResponseQuestions}
               id="numFreeResponseQuestions"
+              min="0"
+              max="2"
               placeholder="Enter the number of free response questions"
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              onChange={(e) => setNumFreeResponseQuestions(Number(e.target.value))}
+              onChange={(e) => setNumFreeResponseQuestions(Math.min(2, Math.max(0, Number(e.target.value))))}
             />
           </div>
 

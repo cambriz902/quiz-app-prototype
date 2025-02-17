@@ -6,3 +6,22 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }));
+
+global.fetch = require('node-fetch');
+global.Headers = require('node-fetch').Headers;
+global.Request = require('node-fetch').Request;
+global.Response = require('node-fetch').Response;
+global.AbortSignal = require('node-fetch').AbortSignal;
+
+// Mock Prisma globally
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    quiz: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+    },
+    question: {
+      createMany: jest.fn(),
+    },
+  },
+}));
