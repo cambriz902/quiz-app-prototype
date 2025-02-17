@@ -4,11 +4,16 @@ import { generateQuiz } from '@/lib/services/openaiService'
 import { createQuizFromOpenAI } from '@/lib/db/quizService'
 import { NextRequest } from 'next/server'
 
+interface QuizResponse {
+  quizId?: number;
+  error?: string;
+}
+
 // Mock NextResponse
 jest.mock('next/server', () => ({
   NextRequest: jest.requireActual('next/server').NextRequest,
   NextResponse: {
-    json: (data: any, init?: ResponseInit) => {
+    json: (data: QuizResponse, init?: ResponseInit) => {
       return new Response(JSON.stringify(data), {
         ...init,
         headers: { 'content-type': 'application/json', ...init?.headers },
@@ -20,6 +25,12 @@ jest.mock('next/server', () => ({
 // Mock dependencies
 jest.mock('@/lib/services/openaiService')
 jest.mock('@/lib/db/quizService')
+
+interface QuizRequest {
+  topic?: string;
+  numMultipleChoiceQuestions?: number;
+  numFreeResponseQuestions?: number;
+}
 
 describe('POST /api/quizzes/create', () => {
   const mockQuizId = 123
@@ -39,7 +50,7 @@ describe('POST /api/quizzes/create', () => {
     (createQuizFromOpenAI as jest.Mock).mockResolvedValue({ id: mockQuizId });
   });
 
-  const createRequest = (body: any) => {
+  const createRequest = (body: QuizRequest) => {
     return new NextRequest(
       new Request('http://localhost/api/quizzes/create', {
         method: 'POST',
