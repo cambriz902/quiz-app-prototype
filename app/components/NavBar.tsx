@@ -1,9 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: session } = useSession();
 
   return (
     <nav className="bg-white shadow-md mb-8">
@@ -18,18 +20,43 @@ const NavBar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden sm:flex sm:items-center sm:space-x-4">
-            <Link
-              href="/quizzes/create"
-              className="px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 transition-colors"
-            >
-              Create Quiz
-            </Link>
-            <Link
-              href="/quizzes"
-              className="px-4 py-2 text-gray-700 hover:text-blue-500 transition-colors"
-            >
-              Quizzes
-            </Link>
+            {session ? (
+              <>
+                <Link
+                  href="/quizzes/create"
+                  className="px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 transition-colors"
+                >
+                  Create Quiz
+                </Link>
+                <Link
+                  href="/quizzes"
+                  className="px-4 py-2 text-gray-700 hover:text-blue-500 transition-colors"
+                >
+                  Quizzes
+                </Link>
+                <button
+                  onClick={() => signOut()}
+                  className="px-4 py-2 text-gray-700 hover:text-red-500 transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-gray-700 hover:text-blue-500 transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="px-4 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 transition-colors"
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -69,20 +96,50 @@ const NavBar = () => {
       {isOpen && (
         <div className="sm:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link
-              href="/quizzes/create"
-              className="block px-3 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Create Quiz
-            </Link>
-            <Link
-              href="/quizzes"
-              className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Quizzes
-            </Link>
+            {session ? (
+              <>
+                <Link
+                  href="/quizzes/create"
+                  className="block px-3 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Create Quiz
+                </Link>
+                <Link
+                  href="/quizzes"
+                  className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Quizzes
+                </Link>
+                <button
+                  onClick={() => {
+                    signOut();
+                    setIsOpen(false);
+                  }}
+                  className="block w-full text-left px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  className="block px-3 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Register
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
