@@ -16,6 +16,22 @@ jest.mock('@/api/auth/[...nextauth]/route', () => ({
   authOptions: {}
 }));
 
+// Mock Prisma globally
+jest.mock('@/lib/prisma', () => ({
+  prisma: {
+    quiz: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+    },
+    question: {
+      createMany: jest.fn(),
+    },
+    user: {
+      findUnique: jest.fn(),
+    }
+  },
+}));
+
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
@@ -27,19 +43,6 @@ global.Headers = Headers as unknown as typeof global.Headers;
 global.Request = Request as unknown as typeof global.Request;
 global.Response = Response as unknown as typeof global.Response;
 global.AbortSignal = AbortSignal;
-
-// Mock Prisma globally
-jest.mock('@/lib/prisma', () => ({
-  prisma: {
-    quiz: {
-      create: jest.fn(),
-      findUnique: jest.fn(),
-    },
-    question: {
-      createMany: jest.fn(),
-    },
-  },
-}));
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
