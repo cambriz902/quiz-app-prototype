@@ -18,7 +18,7 @@ import { QuizAttemptForGrading } from "@/lib/types/attempts";
 export async function createQuizFromOpenAI(quizData: OpenAIQuizResponseFormat, userId: number) {
   try {
     return await prisma.$transaction(async (tx) => {
-      // Create the quiz
+      // Create the quiz with authorId
       const quiz = await tx.quiz.create({
         data: {
           title: quizData.title,
@@ -32,31 +32,25 @@ export async function createQuizFromOpenAI(quizData: OpenAIQuizResponseFormat, u
 
       // Create questions in batches
       const batchSize = 5;
-      try {
-        for (let i = 0; i < quizData.questions.length; i += batchSize) {
-          const questionsBatch = quizData.questions.slice(i, i + batchSize);
-          
-          // Create each question and its options
-          for (const question of questionsBatch) {
-            await tx.question.create({
-              data: {
-                quizId: quiz.id,
-                text: question.text,
-                type: question.type,
-                referenceText: question.referenceText,
-                multipleChoiceOptions: question.type === 'multiple_choice' ? {
-                  create: question.multipleChoiceOptions?.map(option => ({
-                    isCorrect: option.isCorrect,
-                    value: option.text
-                  }))
-                } : undefined
-              }
-            });
-          }
+      for (let i = 0; i < quizData.questions.length; i += batchSize) {
+        const questionsBatch = quizData.questions.slice(i, i + batchSize);
+        
+        for (const question of questionsBatch) {
+          await tx.question.create({
+            data: {
+              quizId: quiz.id,
+              text: question.text,
+              type: question.type,
+              referenceText: question.referenceText,
+              multipleChoiceOptions: question.type === 'multiple_choice' ? {
+                create: question.multipleChoiceOptions?.map(option => ({
+                  isCorrect: option.isCorrect,
+                  value: option.text
+                }))
+              } : undefined
+            }
+          });
         }
-      } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        throw new Error(`Failed to create questions: ${message}`);
       }
       return quiz;
     }, {
@@ -77,6 +71,7 @@ interface SaveAnswerOptions {
   answer: string;
   isCorrect: boolean;
   feedback?: string;
+  userId: number;
 }
 
 export async function saveQuestionAnswer({
@@ -86,8 +81,20 @@ export async function saveQuestionAnswer({
   questionId,
   answer,
   isCorrect,
-  feedback
+  feedback,
+  userId
 }: SaveAnswerOptions) {
+  const attempt = await tx.userAttemptedQuiz.findUnique({
+    where: {
+      id: attemptId,
+      userId: userId 
+    }
+  });
+
+  if (!attempt) {
+    throw new Error("Unauthorized access to quiz attempt");
+  }
+
   if (questionType === QuestionType.multiple_choice) {
     await tx.userAttemptedQuestionMultipleChoice.create({
       data: {
@@ -120,8 +127,13 @@ export async function updateQuizProgress(
   tx: Prisma.TransactionClient,
   attempt: QuizAttemptForGrading,
   isCorrect: boolean,
-  isLastQuestion: boolean
+  isLastQuestion: boolean,
+  userId: number
 ) {
+  if (attempt.userId !== userId) {
+    throw new Error("Unauthorized access to quiz attempt");
+  }
+
   const totalCorrect = attempt.correct + (isCorrect ? 1 : 0);
   const totalIncorrect = attempt.incorrect + (isCorrect ? 0 : 1);
   const totalAnswered = totalCorrect + totalIncorrect;
@@ -140,7 +152,10 @@ export async function updateQuizProgress(
   }
 
   await tx.userAttemptedQuiz.update({
-    where: { id: attempt.id },
+    where: { 
+      id: attempt.id,
+      userId: userId 
+    },
     data: updateData,
   });
 }

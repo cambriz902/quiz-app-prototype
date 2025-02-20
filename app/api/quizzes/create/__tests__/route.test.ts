@@ -2,6 +2,7 @@
 import { POST } from '../route'
 import { generateQuiz } from '@/lib/services/openaiService'
 import { createQuizFromOpenAI } from '@/lib/db/quizService'
+import { getSessionUserId } from '@/lib/auth'
 import { NextRequest } from 'next/server'
 
 interface QuizResponse {
@@ -25,6 +26,7 @@ jest.mock('next/server', () => ({
 // Mock dependencies
 jest.mock('@/lib/services/openaiService')
 jest.mock('@/lib/db/quizService')
+jest.mock('@/lib/auth')
 
 interface QuizRequest {
   topic?: string;
@@ -42,6 +44,8 @@ describe('POST /api/quizzes/create', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    // Mock successful auth
+    (getSessionUserId as jest.Mock).mockResolvedValue(mockQuizId);
     // Mock successful quiz creation with more specific data
     (generateQuiz as jest.Mock).mockResolvedValue({ 
       questions: [],
@@ -132,5 +136,26 @@ describe('POST /api/quizzes/create', () => {
       expect(response.status).toBe(500);
       expect(data.error).toBe('Failed to process request');
     });
+  });
+
+  // Add test for unauthorized access
+  it('returns error when user is not authenticated', async () => {
+    (getSessionUserId as jest.Mock).mockResolvedValue(null);
+    
+    const response = await POST(new NextRequest(
+      new Request('http://localhost/api/quizzes/create', {
+        method: 'POST',
+        body: JSON.stringify({
+          topic: 'Test Topic',
+          numMultipleChoiceQuestions: 5,
+          numFreeResponseQuestions: 1,
+        })
+      })
+    ));
+
+
+    expect(response.status).toBe(401);
+    const data = await response.json();
+    expect(data.error).toBe('Unauthorized');
   });
 }); 

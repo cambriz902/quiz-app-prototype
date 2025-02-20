@@ -1,10 +1,15 @@
 import prisma from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getSessionUserId } from "@/lib/auth";
 
 /**
  * Fetch all quizzes from the database with pagination
  */
 export async function fetchQuizzes(page = 1, pageSize = 10) {
+  const userId = await getSessionUserId();
+  if (!userId) {
+    return [];
+  }
+  
   try {
     return await prisma.quiz.findMany({
       select: {
@@ -12,6 +17,9 @@ export async function fetchQuizzes(page = 1, pageSize = 10) {
         title: true,
         description: true,
         createdAt: true,
+      },
+      where: {
+        authorId: userId,
       },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,
@@ -28,7 +36,10 @@ export async function fetchQuizzes(page = 1, pageSize = 10) {
  * This function runs on the server.
  */
 export async function fetchQuizWithProgress(quizId: number) {
-  const user = getCurrentUser();
+  const userId = await getSessionUserId();
+  if (!userId) {
+    return [];
+  }
 
   const quiz = await prisma.quiz.findUnique({
     where: { id: quizId },
@@ -38,7 +49,7 @@ export async function fetchQuizWithProgress(quizId: number) {
         orderBy: { createdAt: "asc" },
       },
       userAttempts: {
-        where: { userId: user.id },
+        where: { userId: userId },
         orderBy: { createdAt: "desc" },
         take: 1,
         include: {
@@ -85,10 +96,13 @@ export async function fetchQuizWithProgress(quizId: number) {
  * Fetch quiz results for a specific attempt
  */
 export async function fetchQuizResults(quizId: number, attemptId: number) {
-  const user = getCurrentUser();
+  const userId = await getSessionUserId();
+  if (!userId) {
+    return [];
+  }
 
   const attempt = await prisma.userAttemptedQuiz.findUnique({
-    where: { id: attemptId, userId: user.id, quizId: quizId },
+    where: { id: attemptId, userId: userId, quizId: quizId },
     include: {
       quiz: {
         select: {

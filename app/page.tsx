@@ -6,7 +6,7 @@ export default function HomePage() {
   const router = useRouter();
 
   return (
-    <main className="flex flex-col items-center justify-center h-screen px-4 text-center bg-gray-100">
+    <main className="flex flex-col items-center justify-center h-screen px-4 text-center">
       <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
         Welcome to the <span className="text-blue-600">Quiz App</span>
       </h1>

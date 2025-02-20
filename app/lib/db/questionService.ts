@@ -14,14 +14,15 @@ export async function getQuestion(questionId: number) {
   });
 }
 
-export async function getQuizAttempt(attemptId: number) {
+export async function getQuizAttempt(attemptId: number, userId: number) {
   return prisma.userAttemptedQuiz.findUnique({
-    where: { id: attemptId },
+    where: { id: attemptId, userId: userId },
     select: {
       id: true,
       correct: true,
       incorrect: true,
       createdAt: true,
+      userId: true,
     },
   });
 } 

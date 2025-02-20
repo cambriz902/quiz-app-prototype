@@ -3,4 +3,5 @@ export interface QuizAttemptForGrading {
   correct: number;
   incorrect: number;
   createdAt: Date;
+  userId: number;
 }

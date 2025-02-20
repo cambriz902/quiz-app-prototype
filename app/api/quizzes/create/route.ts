@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateQuiz } from "@/lib/services/openaiService";
 import { createQuizFromOpenAI } from "@/lib/db/quizService";
+import { getSessionUserId } from "@/lib/auth";
 
 function isValidQuizRequest(
   topic?: string,
@@ -32,7 +33,13 @@ function isValidQuizRequest(
 
 export async function POST(req: NextRequest) {
   try {
+    const userId = await getSessionUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { topic, numMultipleChoiceQuestions, numFreeResponseQuestions } = await req.json();
+    
     const [isValid, errorMessage] = isValidQuizRequest(topic, numMultipleChoiceQuestions, numFreeResponseQuestions);
     if (!isValid) {
       return NextResponse.json({ error: errorMessage }, { status: 400 });
@@ -43,7 +50,7 @@ export async function POST(req: NextRequest) {
       numMultipleChoiceQuestions,
       numFreeResponseQuestions
     );
-    const quiz = await createQuizFromOpenAI(quizResponse, 1);
+    const quiz = await createQuizFromOpenAI(quizResponse, userId);
 
     return NextResponse.json({ quizId: quiz.id });
     

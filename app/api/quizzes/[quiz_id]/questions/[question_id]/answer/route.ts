@@ -6,7 +6,7 @@ import { getQuestion, getQuizAttempt } from "@/lib/db/questionService";
 import prisma from "@/lib/prisma";
 import { QuestionWithOptions, GradingResult } from "@/lib/types/questions";
 import { QuizAttemptForGrading } from "@/lib/types/attempts";
-
+import { getSessionUserId } from "@/lib/auth";
 interface AnswerRequestBody {
   selectedAnswer: string;
   attemptId: string;
@@ -18,6 +18,10 @@ export async function POST(
   { params }: { params: Promise<{ quiz_id: string; question_id: string }> }
 ) {
   try {
+    const userId = await getSessionUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const { selectedAnswer, attemptId, isLastQuestion } = await req.json() as AnswerRequestBody;
     const { question_id } = await params;
     const questionId = Number(question_id);
@@ -25,7 +29,7 @@ export async function POST(
     // Get question and attempt data
     const [question, attempt] = await Promise.all([
       getQuestion(questionId),
-      getQuizAttempt(Number(attemptId))
+      getQuizAttempt(Number(attemptId), userId)
     ]);
 
     if (!question || !attempt) {
@@ -41,6 +45,7 @@ export async function POST(
       selectedAnswer,
       isCorrect,
       isLastQuestion,
+      userId,
       feedback
     );
 
@@ -73,7 +78,8 @@ async function saveAnswerAndUpdateProgress(
   selectedAnswer: string,
   isCorrect: boolean,
   isLastQuestion: boolean,
-  feedback?: string
+  userId: number,
+  feedback?: string 
 ) {
   await prisma.$transaction(async (tx) => {
     // Save the answer
@@ -84,7 +90,8 @@ async function saveAnswerAndUpdateProgress(
       questionId: question.id,
       answer: selectedAnswer,
       isCorrect,
-      feedback
+      feedback,
+      userId
     });
 
     // Update quiz progress
@@ -92,7 +99,8 @@ async function saveAnswerAndUpdateProgress(
       tx,
       attempt,
       isCorrect,
-      isLastQuestion
+      isLastQuestion,
+      userId
     );
   });
 }

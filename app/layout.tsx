@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import NavBar from "@/components/NavBar";
 import "./globals.css";
+import { NextAuthProvider } from './providers';
 
 export const metadata: Metadata = {
   title: "Quiz App",
@@ -16,8 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-white text-gray-900">
-        <NavBar />
-        {children}  
+        <NextAuthProvider>
+          <NavBar />
+          {children}  
+        </NextAuthProvider>
       </body>
     </html>
   );
