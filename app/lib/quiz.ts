@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/auth";
 import { QuizProgressModel } from "@/types/quizProgress";
+import { QuizResultsModel } from "@/types/quizResults";
 
 /**
  * Fetch all quizzes from the database with pagination
@@ -101,10 +102,10 @@ export async function fetchQuizWithProgress(quizId: number): Promise<QuizProgres
 /**
  * Fetch quiz results for a specific attempt
  */
-export async function fetchQuizResults(quizId: number, attemptId: number) {
+export async function fetchQuizResults(quizId: number, attemptId: number): Promise<QuizResultsModel | null> {
   const userId = await getSessionUserId();
   if (!userId) {
-    return [];
+    return null;
   }
 
   const attempt = await prisma.userAttemptedQuiz.findUnique({
@@ -147,9 +148,9 @@ export async function fetchQuizResults(quizId: number, attemptId: number) {
           value: option.value,
           isCorrect: option.isCorrect,
         })),
-        isCorrectFreeResponse: question.type === "free_response" ? userFreeResponse?.isCorrect : null,
-        freeResponseFeedback: question.type === "free_response" ? userFreeResponse?.feedback : null,
-        userAnswer: question.type === "multiple_choice" ? userMCAnswer?.multipleChoiceAnswerId : userFreeResponse?.answer,
+        isCorrectFreeResponse: userFreeResponse?.isCorrect ?? null,
+        freeResponseFeedback: userFreeResponse?.feedback ?? null,
+        userAnswer: userMCAnswer?.multipleChoiceAnswerId || userFreeResponse?.answer || null,
         wasAttempted: Boolean(userMCAnswer || userFreeResponse),
       };
     }),

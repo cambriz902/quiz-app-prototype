@@ -1,17 +1,17 @@
 import { redirect } from "next/navigation";
 import { fetchQuizResults } from "@/lib/quiz";
 import RetakeQuizButton from "./RetakeQuizButton";
+import { QuizResultsModel } from "@/types/quizResults";
 
 export default async function QuizResultsPage({
   params,
   searchParams,
 }: {
-  params: Promise<{ quiz_id: string }>;
-  searchParams: Promise<{ attemptId?: string }>;
+  params: { quiz_id: string };
+  searchParams: { attemptId?: string };
 }) {
-  const { quiz_id } = await params;
-  const { attemptId } = await searchParams;
-  const quizId = Number(quiz_id);
+  const quizId = Number(params.quiz_id);
+  const { attemptId } = searchParams;
 
   if (!attemptId) {
     redirect(`/quizzes/${quizId}`);
@@ -22,7 +22,9 @@ export default async function QuizResultsPage({
   if (!result) {
     redirect(`/quizzes/${quizId}`);
   }
-  const { quiz, score, durationInSeconds, questions } = result;
+
+  const quizResult = result as QuizResultsModel;
+  const { quiz, score, durationInSeconds, questions } = quizResult;
 
   const minutes = durationInSeconds !== null ? Math.floor(durationInSeconds / 60) : null;
   const seconds = durationInSeconds !== null ? durationInSeconds % 60 : null;
