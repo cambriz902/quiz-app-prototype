@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
@@ -32,11 +32,9 @@ export async function POST(req: Request) {
       },
     });
 
-    // Remove password from response
-    const { password: _, ...userWithoutPassword } = user;
-
-    return NextResponse.json(userWithoutPassword);
+    return NextResponse.json({ message: "User registered successfully" });
   } catch (error) {
+    console.error('Registration error:', error);
     return NextResponse.json(
       { error: "Error creating user" },
       { status: 500 }

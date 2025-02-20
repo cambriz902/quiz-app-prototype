@@ -5,6 +5,16 @@ import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      email: string;
+      name: string;
+    }
+  }
+}
+
 const handler = NextAuth({
   providers: [
     CredentialsProvider({
@@ -49,13 +59,14 @@ const handler = NextAuth({
     signIn: '/login',
   },
   callbacks: {
-    // Prevent password from being sent to the client
-    async session({ session, token }) {
-      if (session?.user) {
-        session.user.id = token.sub;
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.sub!;
+        session.user.email = token.email!;
+        session.user.name = token.name!;
       }
       return session;
-    },
+    }
   },
   session: {
     strategy: "jwt",
