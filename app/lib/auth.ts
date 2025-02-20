@@ -1,8 +1,7 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/api/auth/[...nextauth]/route";
-import { PrismaClient, User } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { User } from "@prisma/client";
+import prisma from "@/lib/prisma";
 
 type CurrentUser = Pick<User, 'id' | 'name' | 'email'>;
 
