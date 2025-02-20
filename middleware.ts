@@ -14,8 +14,8 @@ export default withAuth(
 export const config = {
   // Protect multiple path patterns
   matcher: [
-    // '/quizzes/:path*',
-    // '/api/quizzes/:path*', 
-    // '/api/check-free-response-answer/:path*',
+    '/quizzes/:path*',
+    '/api/quizzes/:path*', 
+    '/api/check-free-response-answer/:path*',
   ]
 }; 
