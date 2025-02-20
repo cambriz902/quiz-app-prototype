@@ -1,5 +1,5 @@
 import type { Config } from 'jest'
-import nextJest from 'next/jest.js'
+import nextJest from 'next/jest'
  
 const createJestConfig = nextJest({
   dir: './',
@@ -14,6 +14,7 @@ const config: Config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/app/$1',  // This maps @/ to app/ directory
   },
+  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
 }
  
 export default createJestConfig(config)

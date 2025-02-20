@@ -1,17 +1,32 @@
 import '@testing-library/jest-dom';
 import 'openai/shims/node';
+import fetch, { Headers, Request, Response } from 'node-fetch';
+import { jest } from '@jest/globals';
+
+// Silence console.error in tests
+jest.spyOn(console, 'error').mockImplementation(() => {});
+
+// Mock next-auth
+jest.mock('next-auth/next', () => ({
+  getServerSession: jest.fn(() => null)
+}));
+
+// Mock auth options
+jest.mock('@/api/auth/[...nextauth]/route', () => ({
+  authOptions: {}
+}));
 
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
   disconnect: jest.fn(),
-}));
+})) as unknown as typeof ResizeObserver;
 
-global.fetch = require('node-fetch');
-global.Headers = require('node-fetch').Headers;
-global.Request = require('node-fetch').Request;
-global.Response = require('node-fetch').Response;
-global.AbortSignal = require('node-fetch').AbortSignal;
+global.fetch = fetch as unknown as typeof global.fetch;
+global.Headers = Headers as unknown as typeof global.Headers;
+global.Request = Request as unknown as typeof global.Request;
+global.Response = Response as unknown as typeof global.Response;
+global.AbortSignal = AbortSignal;
 
 // Mock Prisma globally
 jest.mock('@/lib/prisma', () => ({
@@ -24,4 +39,13 @@ jest.mock('@/lib/prisma', () => ({
       createMany: jest.fn(),
     },
   },
+}));
+
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    refresh: jest.fn(),
+  }),
+  usePathname: () => '',
 }));

@@ -1,12 +1,21 @@
 import { withAuth } from "next-auth/middleware";
 
-export default withAuth({
-  pages: {
-    signIn: "/login",
-  },
-});
+export default withAuth(
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token 
+    },
+    pages: {
+      signIn: '/login',
+    },
+  }
+);
 
 export const config = {
-  // Protect all routes that start with /quizzes
-  matcher: ["/quizzes/:path*"]
+  // Protect multiple path patterns
+  matcher: [
+    // '/quizzes/:path*',
+    // '/api/quizzes/:path*', 
+    // '/api/check-free-response-answer/:path*',
+  ]
 }; 
