@@ -6,9 +6,18 @@ import { jest } from '@jest/globals';
 // Silence console.error in tests
 jest.spyOn(console, 'error').mockImplementation(() => {});
 
-// Mock next-auth
-jest.mock('next-auth/next', () => ({
-  getServerSession: jest.fn(() => null)
+// Mock next-auth with explicit promise
+jest.mock('next-auth/react', () => ({
+  signIn: jest.fn().mockImplementation(() => 
+    Promise.resolve({ 
+      ok: true,
+      error: null,
+      status: 200,
+      url: null 
+    })
+  ),
+  signOut: jest.fn(),
+  useSession: jest.fn(() => ({ data: null, status: 'unauthenticated' })),
 }));
 
 // Mock auth options
@@ -32,6 +41,11 @@ jest.mock('@/lib/prisma', () => ({
   },
 }));
 
+// Mock getSessionUserId before any imports use it
+jest.mock('@/lib/auth', () => ({
+  getSessionUserId: jest.fn(() => Promise.resolve(123)),
+}));
+
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
@@ -44,11 +58,21 @@ global.Request = Request as unknown as typeof global.Request;
 global.Response = Response as unknown as typeof global.Response;
 global.AbortSignal = AbortSignal;
 
-// Mock next/navigation
+// Create a single instance of the mock router
+const mockRouter = {
+  push: jest.fn().mockImplementation(() => {}),
+  refresh: jest.fn(),
+  back: jest.fn(),
+  forward: jest.fn(),
+  replace: jest.fn(),
+};
+
+// Mock next/navigation to return the same instance
 jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-    refresh: jest.fn(),
-  }),
+  useRouter: () => mockRouter,  // Return same instance every time
   usePathname: () => '',
+  useSearchParams: () => new URLSearchParams(),
 }));
+
+// Export the mockRouter for tests that need to access it
+export { mockRouter };

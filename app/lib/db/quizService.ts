@@ -5,7 +5,7 @@ import { QuizAttemptForGrading } from "@/lib/types/attempts";
 
 
 /**
- * TODO: If this is taking too long to execute, we can crate a job
+ * TODO: If this is taking too long to execute, we can create a job
  * and email the user a link to the quiz once it's ready
  */
 
@@ -17,10 +17,7 @@ import { QuizAttemptForGrading } from "@/lib/types/attempts";
  */
 export async function createQuizFromOpenAI(quizData: OpenAIQuizResponseFormat, userId: number) {
   try {
-    console.log("Creating quiz from OpenAI response format");
-    console.log(quizData);
-    return await prisma.$transaction(async (tx) => {
-      // Create the quiz with authorId
+      return await prisma.$transaction(async (tx) => {
       const quiz = await tx.quiz.create({
         data: {
           title: quizData.title,

@@ -1,9 +1,9 @@
-// import 'openai/shims/node';
+
 import { POST } from '../route'
-import { generateQuiz } from '@/lib/services/openaiService'
-import { createQuizFromOpenAI } from '@/lib/db/quizService'
-import { getSessionUserId } from '@/lib/auth'
-import { NextRequest } from 'next/server'
+import { generateQuiz } from '@/lib/services/openaiService';
+import { createQuizFromOpenAI } from '@/lib/db/quizService';
+import { getSessionUserId } from '@/lib/auth';
+import { NextRequest } from 'next/server';
 
 interface QuizResponse {
   quizId?: number;
@@ -24,9 +24,8 @@ jest.mock('next/server', () => ({
 }))
 
 // Mock dependencies
-jest.mock('@/lib/services/openaiService')
-jest.mock('@/lib/db/quizService')
-jest.mock('@/lib/auth')
+jest.mock('@/lib/services/openaiService');
+jest.mock('@/lib/db/quizService');
 
 interface QuizRequest {
   topic?: string;

@@ -27,12 +27,12 @@ export default function LoginPage() {
         password: data.password,
         redirect: false,
       });
-
       if (response?.error) {
         setError('Invalid credentials');
       } else {
-        router.push('/quizzes'); // Redirect to quizzes page
-        router.refresh();
+        const params = new URLSearchParams(window.location.search);
+        const callbackUrl = params.get('callbackUrl') || '/quizzes';
+        router.push(callbackUrl);
       }
     } catch {
       setError('Something went wrong');
