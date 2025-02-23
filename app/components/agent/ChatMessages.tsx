@@ -1,19 +1,20 @@
 'use client'
 
 import { useRef } from 'react';
+
+import { useChatStore } from '@/store/useChatStore';
 import ChatMessage from './ChatMessage';
 
-interface ChatMessagesProps {
-	messages: any[];
-}
 
-export default function ChatMessages({ messages }: ChatMessagesProps) {
+export default function ChatMessages() {
+	const { apiMessages } = useChatStore();
+
 	const messagesContainerRef = useRef(null);
 
 	return (
 		<div className="flex flex-col p-1 h-full overflow-auto" ref={messagesContainerRef}>
-			{messages.map((message, index) => {
-				const isLastMessage = index === messages.length - 1;
+			{apiMessages.map((message, index) => {
+				const isLastMessage = index === apiMessages.length - 1;
 				return (
 					<ChatMessage 
 						key={index} 

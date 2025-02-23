@@ -13,6 +13,8 @@ interface ChatMessageProps {
 export default function ChatMessage({ message, isLastMessage, messagesContainerRef }: ChatMessageProps) {
 
 	const isUserMessage = message.role === 'user';
+
+	
 	return (
 		<div className={`mt-1 p-1 rounded-sm ${isUserMessage ? "self-end" : ""}`}>
 			{!isUserMessage ? (

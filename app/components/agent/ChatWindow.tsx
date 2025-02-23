@@ -1,17 +1,15 @@
 'use client'
 
+import { useState } from 'react';
+
 import UserInput from './UserInput';
 import ChatMessages from './ChatMessages';
-import { ApiMessage } from '@/app/types/openAI';
 
 interface ChatWindowProps {
 	toggleChatOpen: () => void;
-	messages: ApiMessage[];
 }
 
-export default function ChatWindow({ toggleChatOpen, messages }: ChatWindowProps) {
-
-
+export default function ChatWindow({ toggleChatOpen }: ChatWindowProps) {
 	return (
 		<div>
 			<div className="relative h-[600px] max-h-[600px] w-[400px] border-2 bg-white rounded-lg">
@@ -22,7 +20,7 @@ export default function ChatWindow({ toggleChatOpen, messages }: ChatWindowProps
 					x
 				</button>
 				<div className="flex flex-col h-full">
-					<ChatMessages messages={messages} />
+					<ChatMessages />
 					<UserInput />
 				</div>
 			</div>
