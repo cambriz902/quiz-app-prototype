@@ -37,7 +37,7 @@ export default function ChatMessage({ message, isLastMessage, messagesContainerR
 					)}
 				</div>
 			) : (
-				<div className="p-1 rounded-md bg-gray-200">{message.content}</div>
+				<div className="p-1 rounded-md bg-blue-100">{message.content}</div>
 			)}
 		</div>
 	)
