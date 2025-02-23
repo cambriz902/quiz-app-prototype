@@ -8,7 +8,9 @@ interface ChatWindowProps {
 	toggleChatOpen: () => void;
 	messages: ApiMessage[];
 }
+
 export default function ChatWindow({ toggleChatOpen, messages }: ChatWindowProps) {
+
 
 	return (
 		<div>

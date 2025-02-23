@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react';
-
 import ChatWindow from './ChatWindow';
 import ChatClosedState from './ChatClosedState';
 import { ApiMessage } from '@/app/types/openAI';
@@ -39,9 +38,13 @@ const mockMessages: ApiMessage[] = [{
 	content: 'Searching for quiz with react in title. Searching for quiz with react in title. Searching for quiz with react in title .Searching for quiz with react in title Searching for quiz with react in title. Searching for quiz with react in title'
 }];
 
+const apiMessages: ApiMessage[] = [{
+	role: 'assistant',
+	content: "Hello! How can I help? It looks like you're looking at quizzes. Do you want me to find a quiz for you?"
+}];
 export default function AgentContainer() {
 	const [isChatOpen, setIsChatOpen] = useState(false);
-	const [messages, setMessages] = useState<ApiMessage[]>(mockMessages);
+	const [messages, setMessages] = useState<ApiMessage[]>(apiMessages);
 
 	return (
 		<div className="fixed bottom-4 right-8">

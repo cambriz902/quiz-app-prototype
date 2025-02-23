@@ -2,6 +2,7 @@
 
 import AgentOutputDisplay from './AgentOutputDisplay';
 import { ApiMessage } from '@/app/types/openAI';
+
 const femaleAgentV1 = "/videos/female-agent-v2.mp4";
 
 interface ChatMessageProps {
@@ -19,7 +20,7 @@ export default function ChatMessage({ message, isLastMessage, messagesContainerR
 					{isLastMessage ? (
 						<>
 							<AgentOutputDisplay
-								video={femaleAgentV1}
+								video={'/videos/female-agent-v2.mp4'}
 								containerRef={messagesContainerRef}
 								videoPlayEnabled={true}
 								text={message.content}
@@ -28,7 +29,7 @@ export default function ChatMessage({ message, isLastMessage, messagesContainerR
 					) : (
 						<>
 							<AgentOutputDisplay
-								video={femaleAgentV1}
+								video={'/videos/female-agent-v2.mp4'}
 								containerRef={messagesContainerRef}
 								videoPlayEnabled={false}
 								text={message.content}
