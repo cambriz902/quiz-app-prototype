@@ -4,8 +4,8 @@ import { checkFreeResponseAnswer } from "@/lib/services/openaiService";
 import { saveQuestionAnswer, updateQuizProgress } from "@/lib/db/quizService";
 import { getQuestion, getQuizAttempt } from "@/lib/db/questionService";
 import prisma from "@/lib/prisma";
-import { QuestionWithOptions, GradingResult } from "@/lib/types/questions";
-import { QuizAttemptForGrading } from "@/lib/types/attempts";
+import { QuestionWithOptions, GradingResult } from "@/types/questions";
+import { QuizAttemptForGrading } from "@/types/attempts";
 import { getSessionUserId } from "@/lib/auth";
 interface AnswerRequestBody {
   selectedAnswer: string;
