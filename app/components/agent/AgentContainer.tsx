@@ -22,6 +22,21 @@ const mockMessages: ApiMessage[] = [{
 }, {
 	role: 'assistant',
 	content: 'Searching for quiz with react in title'
+}, {
+	role: 'assistant',
+	content: "Hi there! I'm here to help. Do you want me to help you find a Quiz?"
+}, {
+	role: 'user',
+	content: "Yes, i'm looking for the quiz on fruits"
+}, {
+	role: 'assistant',
+	content: "Awesome!, it's easier for me to find a quiz from the title. Can you tell me a word that may be in the title?"
+}, {
+	role: 'user',
+	content: 'i think the work react is in the title or its something like that'
+}, {
+	role: 'assistant',
+	content: 'Searching for quiz with react in title. Searching for quiz with react in title. Searching for quiz with react in title .Searching for quiz with react in title Searching for quiz with react in title. Searching for quiz with react in title'
 }];
 
 export default function AgentContainer() {

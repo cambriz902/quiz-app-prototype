@@ -11,6 +11,7 @@ export default function UserInput() {
 				<input
 					type="text"
 					readOnly={isDisabled}
+					placeholder="Insert message..."
 					value={message}
 					onChange={(e) => setMessage(e.target.value)}
 					className="flex-1 p-2 mr-1 rounded-md"
