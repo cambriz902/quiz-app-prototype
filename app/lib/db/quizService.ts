@@ -53,8 +53,7 @@ export async function createQuizFromOpenAI(quizData: OpenAIQuizResponseFormat, u
       }
       return quiz;
     }, {
-      timeout: 20000,
-      maxWait: 5000,
+      timeout: 30000,
     });
   } catch (error) {
     console.error("Error creating quiz:", error);
