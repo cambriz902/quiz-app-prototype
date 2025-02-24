@@ -1,7 +1,7 @@
 import { OpenAIQuizResponseFormat } from "@/lib/openaiTypes";
 import prisma from "@/lib/prisma";  
 import { QuestionType, Prisma } from "@prisma/client";
-import { QuizAttemptForGrading } from "@/lib/types/attempts";
+import { QuizAttemptForGrading } from "@/types/attempts";
 
 
 /**

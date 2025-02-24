@@ -1,20 +1,18 @@
+import openAIClient from '@/lib/services/openAIClient';
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
 import { OpenAIResponseFormat, OpenAIResponseSchema } from "@/lib/openaiTypes";
 import { zodResponseFormat } from "openai/helpers/zod";
 
 
 export async function POST(req: NextRequest) {
   try {
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
     const { userAnswer, questionText, questionContext } = await req.json();
 
     if (!userAnswer || !questionText || !questionContext) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const response = await openai.chat.completions.create({
+    const response = await openAIClient.chat.completions.create({
       model: "gpt-4o-mini",
       response_format: zodResponseFormat(OpenAIResponseSchema, "answer_evaluation"),
       messages: [

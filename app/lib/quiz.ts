@@ -2,11 +2,12 @@ import prisma from "@/lib/prisma";
 import { getSessionUserId } from "@/lib/auth";
 import { QuizProgressModel } from "@/types/quizProgress";
 import { QuizResultsModel } from "@/types/quizResults";
+import { Quiz } from "@/types/quiz";
 
 /**
  * Fetch all quizzes from the database with pagination
  */
-export async function fetchQuizzes(page = 1, pageSize = 10) {
+export async function fetchQuizzes(page = 1, pageSize = 20, searchQuery = ''): Quiz {
   const userId = await getSessionUserId();
   if (!userId) {
     return [];
@@ -22,6 +23,12 @@ export async function fetchQuizzes(page = 1, pageSize = 10) {
       },
       where: {
         authorId: userId,
+        ...(searchQuery.length && {
+          OR: [
+            { title: { contains: searchQuery, mode: 'insensitive' } },
+            { description: { contains: searchQuery, mode: 'insensitive' } }
+          ]
+        })
       },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,

@@ -1,13 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
-import NavBar from "@/components/NavBar";
-import "./globals.css";
+import NavBar from '@/components/NavBar';
 import { getSession } from '@/lib/session';
-import SessionProvider from "@/components/SessionProvider";
+import AgentContainer from '@/components/agent/AgentContainer';
+import SessionProvider from '@/components/SessionProvider';
+
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Quiz App",
-  description: "Users can take quizzes and test their knowledge.",
+  title: 'Quiz App',
+  description: 'Users can take quizzes and test their knowledge.',
 };
 
 export default async function RootLayout({
@@ -23,6 +25,7 @@ export default async function RootLayout({
         <SessionProvider session={session}>
           <NavBar />
           {children}
+          <AgentContainer />
         </SessionProvider>
       </body>
     </html>
