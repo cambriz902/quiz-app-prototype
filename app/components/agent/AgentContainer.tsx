@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from 'react';
 
-import { useChatStore } from '@/store/useChatStore';
+import { useChatStore } from '@/stores/useChatStore';
 
 
 import ChatWindow from './ChatWindow';
 import ChatClosedState from './ChatClosedState';
 import { ApiMessage } from '@/types/openAI';
+import { ChatMessage } from '@/stores/useChatStore';
 
 
-const initApiMessages: ApiMessage[] = [{
+const initApiMessages: ChatMessage[] = [{
 	role: 'assistant',
 	content: "Hello! How can I help? It looks like you're looking at quizzes. Do you want me to find a quiz for you?"
 }];

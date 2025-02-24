@@ -1,12 +1,14 @@
 'use client'
 
 import AgentOutputDisplay from './AgentOutputDisplay';
-import { ApiMessage } from '@/app/types/openAI';
+import { ApiMessage } from '@/types/openAI';
+import { ChatMessage } from '@/stores/useChatStore';
+import ChatQuizList from './ChatQuizList';
 
 const femaleAgentV1 = "/videos/female-agent-v2.mp4";
 
 interface ChatMessageProps {
-	message: ApiMessage;
+	message: ChatMessage;
 	isLastMessage: boolean; 
 	messageContainerRef: any;
 }
@@ -38,6 +40,9 @@ export default function ChatMessage({ message, isLastMessage, messagesContainerR
 							/>
 						</>
 					)}
+					{message.quizzes?.length ? (
+						<ChatQuizList quizzes={message.quizzes} />
+					) : null}
 				</div>
 			) : (
 				<div className="p-1 rounded-md bg-blue-100">{message.content}</div>

@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 
-import { useChatStore } from '@/store/useChatStore';
+import { useChatStore } from '@/stores/useChatStore';
 import ChatMessage from './ChatMessage';
 
 

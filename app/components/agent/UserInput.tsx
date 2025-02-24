@@ -3,17 +3,17 @@
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 
-import { ApiMessage, AI_ROLE_TYPE } from '@/types/openAI'
-import { useChatStore } from '@/store/useChatStore';
+import { ApiMessage, AI_ROLE_TYPE, OpenAIGeneralHelperFormat } from '@/types/openAI'
+import { useChatStore } from '@/stores/useChatStore';
 
 export default function UserInput() {
 	const { register, handleSubmit, reset } = useForm();
-	const { processUserResponse, isFetchingAgentResponse } = useChatStore();
+	const { processUserResponse, isFetchingAgentResponse  } = useChatStore();
 
 
-	const onSubmit = (data) => {
-		processUserResponse(data.message)
+	const onSubmit = async (data) => {
 		reset();
+		await processUserResponse(data.message)
 	}
 
 	return (

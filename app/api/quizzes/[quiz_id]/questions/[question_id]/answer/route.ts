@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { checkFreeResponseAnswer } from "@/lib/services/openaiService";
 import { saveQuestionAnswer, updateQuizProgress } from "@/lib/db/quizService";
 import { getQuestion, getQuizAttempt } from "@/lib/db/questionService";
@@ -7,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { QuestionWithOptions, GradingResult } from "@/types/questions";
 import { QuizAttemptForGrading } from "@/types/attempts";
 import { getSessionUserId } from "@/lib/auth";
+
 interface AnswerRequestBody {
   selectedAnswer: string;
   attemptId: string;
