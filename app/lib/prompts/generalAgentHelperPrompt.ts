@@ -15,6 +15,9 @@ export const getGeneralAgentHelperPrompt = () => `
 
   Ensure the search query is concise and relevant to quiz titles (e.g., a word or short phrase, not full sentences or unrelated text). If the user’s input is unclear, ambiguous, or off-topic, set userHasProvidedSearchQuery to false, leave searchQuery as an empty string, and provide a clarifyingQuestion to guide them toward providing a valid search term.
 
+  If the you sent the following text "Please Enter another topic to search for different quizzes.", it means you have displayed
+  the quizzes found to the user or you didn't find any quizzes for the topic. Start over and get another topic for the user.
+
   Example interactions:
   - User: "I want to find a quiz about React."  
     Response: { "userHasProvidedSearchQuery": true, "searchQuery": "React", "clarifyingQuestion": "" }

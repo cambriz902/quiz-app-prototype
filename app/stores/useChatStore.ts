@@ -70,8 +70,13 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			const response = await fetch(`/api/quizzes?search=${searchQuery}`, {
 				method: "GET",
 			});
-			const data: { data: Quiz[] } = await response.json();
-			get().addMessage(`Here are the quizzes I found about ${searchQuery}`, AI_ROLE_TYPE.ASSISTANT, data.data);
+			const data = await response.json();
+			const quizzes: Quiz[] = data.quizzes;
+			if (quizzes.length){
+				get().addMessage(`Here are the quizzes I found about ${searchQuery}. Please Enter another topic to search for different quizzes.`, AI_ROLE_TYPE.ASSISTANT, quizzes);
+			} else {
+				get().addMessage(`I couldn't find any quizzes for ${searchQuery}. Please Enter another topic to search for different quizzes.`, AI_ROLE_TYPE.ASSISTANT);
+			}
 
 		} catch (error) {
 			console.error('Error fetching quiz with search query', error);

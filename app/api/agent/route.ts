@@ -10,6 +10,5 @@ interface PostData {
 export async function POST(request: Request): NextResponse<OpenAIGeneralHelperFormat> {
 	const data: PostDataType = await request.json();
 	const response = await promptUserForQuizSearch(data.messages);
-	console.log(response);
 	return NextResponse.json(response)
 }

@@ -10,10 +10,10 @@ export async function GET(request: NextRequest) {
 		const page = searchParams.get('page') || 1;
 		const pageSize = searchParams.get('pageSize') || 20;
 
-		const data = await fetchQuizzes(page, pageSize, search);
+		const quizzes = await fetchQuizzes(page, pageSize, search);
 
 		return NextResponse.json({
-			data
+			quizzes
 		});
 	} catch (error) {
 		return NextResponse.json({
