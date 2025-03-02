@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { 
 	ApiMessage, 
 	AI_ROLE_TYPE, 
-	OpenAIGeneralHelperFormat 
 } from '@/types/openAI';
 
 import { Quiz } from '@/types/quiz';
@@ -11,11 +10,12 @@ import { Quiz } from '@/types/quiz';
 type ChatStore = {
 	apiMessages: ChatMessage[];
 	isFetchingAgentResponse: boolean;
-	filteredQuizzes: Quiz[],
+	filteredQuizzes: Quiz[];
 	initializeMessages: (apiMessages: ChatMessage[]) => void;
-	processUserResponse: (message: string, type: AI_ROLE_TYPE) => OpenAIGeneralHelperFormat;
-	addUserMessage: (message: string, type: AI_ROLE_TYPE) => void;
-	fetchAgentResponse: () => OpenAIGeneralHelperFormat;
+	processUserResponse: (message: string) => Promise<void>;
+	fetchAgentResponse: () => Promise<void>;
+	addMessage: (message: string, type: AI_ROLE_TYPE, quizzes?: Quiz[]) => void;
+	fetchQuizzesWithQuery: (searchQuery: string) => Promise<void>;
 }
 
 export type ChatMessage = ApiMessage & {
@@ -26,7 +26,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 	apiMessages: [],
 	isFetchingAgentResponse: false,
 	filteredQuizzes: [],
-	initializeApiMessages: (apiMessages) => {
+	initializeMessages: (apiMessages) => {
 		if (get().apiMessages.length === 0) {
 			set({ apiMessages })
 		}
@@ -41,7 +41,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 	},
 	processUserResponse: async (message: string) => {
 		get().addMessage(message, AI_ROLE_TYPE.USER);
-		return get().fetchAgentResponse();
+		await get().fetchAgentResponse();
 	},
 	fetchAgentResponse: async () => {
 		try {

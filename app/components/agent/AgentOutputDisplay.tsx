@@ -1,18 +1,17 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, RefObject } from 'react';
 
-interface AgentOutputDisplay {
-	avatar: any;
-	containerRef: any;
+interface AgentOutputDisplayProps {
+	video: string;
+	containerRef: RefObject<HTMLDivElement>;
 	videoPlayEnabled: boolean;
 	text: string;
 }
 
-
-export default function AgentOutputDisplay({ video, containerRef, videoPlayEnabled, text }: AgentOutputDisplay) {
+export default function AgentOutputDisplay({ video, containerRef, videoPlayEnabled, text }: AgentOutputDisplayProps) {
 	const [displayText, setDisplayText] = useState('');
-	const videoRef = useRef(null);
+	const videoRef = useRef<HTMLVideoElement>(null);
 
 	useEffect(() => {
 		if (!videoPlayEnabled) setDisplayText(text);
@@ -20,7 +19,7 @@ export default function AgentOutputDisplay({ video, containerRef, videoPlayEnabl
 		if (text.length > 0 && videoPlayEnabled && containerRef) {
 			setDisplayText('');
 
-			const timeouts = [];
+			const timeouts: NodeJS.Timeout[] = [];
 
 			if (videoRef.current) {
 				videoRef.current.play();
@@ -46,7 +45,7 @@ export default function AgentOutputDisplay({ video, containerRef, videoPlayEnabl
 	}, [text, videoPlayEnabled, containerRef])
 
 	return (
-		<div className="flex flex align-items-start gap-2">
+		<div className="flex align-items-start gap-2">
 			<video
 				ref={videoRef}
 				loop

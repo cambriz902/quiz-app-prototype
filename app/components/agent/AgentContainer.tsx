@@ -19,11 +19,11 @@ const initApiMessages: ChatMessage[] = [{
 export default function AgentContainer() {
 	const [isChatOpen, setIsChatOpen] = useState(false);
 
-	const { initializeApiMessages } = useChatStore();
+	const { initializeMessages } = useChatStore();
 
 	useEffect(() => {
-		initializeApiMessages(initApiMessages);
-	}, [initializeApiMessages])
+		initializeMessages(initApiMessages);
+	}, [initializeMessages])
 
 
 	return (

@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 
 import { useChatStore } from '@/stores/useChatStore';
-import ChatMessage from './ChatMessage';
+import ChatMessageItem from './ChatMessageItem';
 
 
 export default function ChatMessages() {
@@ -16,7 +16,7 @@ export default function ChatMessages() {
 			{apiMessages.map((message, index) => {
 				const isLastMessage = index === apiMessages.length - 1;
 				return (
-					<ChatMessage 
+					<ChatMessageItem
 						key={index} 
 						message={message} 
 						isLastMessage={isLastMessage} 

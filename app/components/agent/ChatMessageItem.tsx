@@ -1,18 +1,16 @@
 'use client'
 
 import AgentOutputDisplay from './AgentOutputDisplay';
-import { ApiMessage } from '@/types/openAI';
 import { ChatMessage } from '@/stores/useChatStore';
 import ChatQuizList from './ChatQuizList';
+import { RefObject } from 'react';
 
-const femaleAgentV1 = "/videos/female-agent-v2.mp4";
-
-interface ChatMessageProps {
+interface ChatMessageItemProps {
 	message: ChatMessage;
 	isLastMessage: boolean; 
-	messageContainerRef: any;
+	messagesContainerRef: RefObject<HTMLDivElement>;
 }
-export default function ChatMessage({ message, isLastMessage, messagesContainerRef }: ChatMessageProps) {
+export default function ChatMessageItem({ message, isLastMessage, messagesContainerRef }: ChatMessageItemProps) {
 
 	const isUserMessage = message.role === 'user';
 
