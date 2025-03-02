@@ -1,6 +1,7 @@
 import openAIClient from '@/lib/services/openAIClient';
 import { NextRequest, NextResponse } from "next/server";
-import { OpenAIResponseFormat, OpenAIResponseSchema } from "@/lib/openaiTypes";
+import { OpenAIResponseSchema } from "@/schemas/quizSchema";
+import { OpenAIResponseFormat } from "@/types/openAI";
 import { zodResponseFormat } from "openai/helpers/zod";
 
 
