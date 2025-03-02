@@ -2,10 +2,17 @@ import '@testing-library/jest-dom';
 import 'openai/shims/node';
 import fetch, { Headers, Request, Response } from 'node-fetch';
 import { jest } from '@jest/globals';
-import type { Mock } from 'jest';
 
 // Silence console.error in tests
 jest.spyOn(console, 'error').mockImplementation(() => {});
+
+
+// Mock window.location
+Object.defineProperty(window, 'location', {
+  value: { search: '' },
+  configurable: true,
+  writable: true
+});
 
 // Add OpenAI client mock
 jest.mock('@/lib/services/openAIClient', () => ({
