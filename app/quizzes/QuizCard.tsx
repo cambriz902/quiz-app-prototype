@@ -11,8 +11,8 @@ interface QuizCardProps {
 export default function QuizCard({ quiz, size = 'medium' }: QuizCardProps ) {
   const router = useRouter();
 
-  const sizeButtonStyle = size === 'medium' ? "p-6" : 'p-1  overflow-hidden '
-  const sizeTitleStyle = size === 'medium' ? "text-xl" : 'text-md':
+  const sizeButtonStyle = size === 'medium' ? "p-6" : 'p-1  overflow-hidden ';
+  const sizeTitleStyle = size === 'medium' ? "text-xl" : 'text-md';
   const sizeDescriptionStyle = size === 'medium' ? 'text-md' : 'text-sm truncate';
   return (
     <button
