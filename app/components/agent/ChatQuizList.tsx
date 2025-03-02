@@ -5,7 +5,7 @@ interface ChatQuizListProps {
 	quizzes: Quiz[];
 }
 
-export default function ChatQuizList({ quizzes }: ChatQuizListDisplayProps) {
+export default function ChatQuizList({ quizzes }: ChatQuizListProps) {
 
 	return (
 		<div className="flex flex-col gap-2">
