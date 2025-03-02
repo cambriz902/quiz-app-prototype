@@ -1,5 +1,6 @@
 
 import { POST } from '../route'
+// import openAIClient from '@/lib/services/openAIClient';
 import { generateQuiz } from '@/lib/services/openaiService';
 import { createQuizFromOpenAI } from '@/lib/db/quizService';
 import { getSessionUserId } from '@/lib/auth';
@@ -51,6 +52,15 @@ describe('POST /api/quizzes/create', () => {
       topic: validRequest.topic 
     });
     (createQuizFromOpenAI as jest.Mock).mockResolvedValue({ id: mockQuizId });
+    // openAIClient.chat.completions.create.mockResolvedValueOnce({
+    //   choices: [
+    //     {
+    //       message: {
+    //         content: 'Quiz created successfully',
+    //       },
+    //     },
+    //   ],
+    // });
   });
 
   const createRequest = (body: QuizRequest) => {

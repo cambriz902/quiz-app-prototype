@@ -2,9 +2,22 @@ import '@testing-library/jest-dom';
 import 'openai/shims/node';
 import fetch, { Headers, Request, Response } from 'node-fetch';
 import { jest } from '@jest/globals';
+import type { Mock } from 'jest';
 
 // Silence console.error in tests
 jest.spyOn(console, 'error').mockImplementation(() => {});
+
+// Add OpenAI client mock
+jest.mock('@/lib/services/openAIClient', () => ({
+  __esModule: true,
+  default: {
+    chat: {
+      completions: {
+        create: jest.fn().mockImplementation(() => Promise.resolve()) as jest.MockedFunction<any>
+      }
+    }
+  }
+}));
 
 // Mock next-auth with explicit promise
 jest.mock('next-auth/react', () => ({
@@ -46,18 +59,6 @@ jest.mock('@/lib/auth', () => ({
   getSessionUserId: jest.fn(() => Promise.resolve(123)),
 }));
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-  observe: jest.fn(),
-  unobserve: jest.fn(),
-  disconnect: jest.fn(),
-})) as unknown as typeof ResizeObserver;
-
-global.fetch = fetch as unknown as typeof global.fetch;
-global.Headers = Headers as unknown as typeof global.Headers;
-global.Request = Request as unknown as typeof global.Request;
-global.Response = Response as unknown as typeof global.Response;
-global.AbortSignal = AbortSignal;
-
 // Create a single instance of the mock router
 const mockRouter = {
   push: jest.fn().mockImplementation(() => {}),
@@ -76,3 +77,16 @@ jest.mock('next/navigation', () => ({
 
 // Export the mockRouter for tests that need to access it
 export { mockRouter };
+
+
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+})) as unknown as typeof ResizeObserver;
+
+global.fetch = fetch as unknown as typeof global.fetch;
+global.Headers = Headers as unknown as typeof global.Headers;
+global.Request = Request as unknown as typeof global.Request;
+global.Response = Response as unknown as typeof global.Response;
+global.AbortSignal = AbortSignal;
