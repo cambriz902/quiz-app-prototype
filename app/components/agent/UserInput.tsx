@@ -1,9 +1,7 @@
 'use client'
 
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
 
-import { ApiMessage, AI_ROLE_TYPE, OpenAIGeneralHelperFormat } from '@/types/openAI'
 import { useChatStore } from '@/stores/useChatStore';
 
 export default function UserInput() {
@@ -28,7 +26,7 @@ export default function UserInput() {
 				/>
 				<button 
 					type="submit"
-					readOnly={isFetchingAgentResponse}
+					disabled={isFetchingAgentResponse}
 					className="p-1 bg-blue-500 rounded-md"
 				>
 					Send

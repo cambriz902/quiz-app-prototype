@@ -31,10 +31,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			set({ apiMessages })
 		}
 	},
-	processUserResponse: async (message: string) => {
-		get().addMessage(message, AI_ROLE_TYPE.USER);
-		return get().fetchAgentResponse();
-	},
 	addMessage: (message: string, type: AI_ROLE_TYPE, quizzes: Quiz[] = []) => {
 		const newApiMessage = {
 			role: type,
@@ -42,6 +38,10 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			quizzes
 		};
 		set({ apiMessages: [...get().apiMessages, newApiMessage] });
+	},
+	processUserResponse: async (message: string) => {
+		get().addMessage(message, AI_ROLE_TYPE.USER);
+		return get().fetchAgentResponse();
 	},
 	fetchAgentResponse: async () => {
 		try {

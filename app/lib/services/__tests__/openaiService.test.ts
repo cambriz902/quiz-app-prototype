@@ -1,16 +1,5 @@
-import OpenAI from 'openai';
 import { checkFreeResponseAnswer, generateQuiz } from '../openaiService';
 import openAIClient from '@/lib/services/openAIClient';
-
-// import OpenAI from 'openai';
-
-// jest.mock('openai', () => {
-//   return {
-//     __esModule: true,
-//     default: jest.fn().mockImplementation(() => ({})),
-//     OpenAI: jest.fn().mockResolvedValue({})
-//   };
-// });
 
 describe('generateQuiz', () => {
   const mockOpenAIResponse = {

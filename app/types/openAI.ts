@@ -1,5 +1,3 @@
-import { Quiz } from './quiz';
-
 export enum AI_ROLE_TYPE {
   USER = "user",
   ASSISTANT = "assistant",

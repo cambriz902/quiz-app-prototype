@@ -6,13 +6,13 @@ import { useChatStore } from '@/stores/useChatStore';
 
 
 import ChatWindow from './ChatWindow';
+import { AI_ROLE_TYPE } from '@/types/openAI';
 import ChatClosedState from './ChatClosedState';
-import { ApiMessage } from '@/types/openAI';
 import { ChatMessage } from '@/stores/useChatStore';
 
 
 const initApiMessages: ChatMessage[] = [{
-	role: 'assistant',
+	role: AI_ROLE_TYPE.ASSISTANT,
 	content: "Hello! How can I help? It looks like you're looking at quizzes. Do you want me to find a quiz for you?"
 }];
 
