@@ -6,6 +6,9 @@ import { mockRouter } from '@/../jest.setup';
 describe('LoginPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // reset location search
+    window.location.search = '';
   });
 
   it('renders login form', () => {
@@ -44,13 +47,8 @@ describe('LoginPage', () => {
 
   it('redirects to callback URL on successful login', async () => {
     (signIn as jest.Mock).mockResolvedValue({ error: null });
-    
-    // Mock window.location.search
-    Object.defineProperty(window, 'location', {
-      value: {
-        search: '?callbackUrl=%2Fquizzes%2F5',
-      },
-    });
+
+    window.location.search = '?callbackUrl=%2Fquizzes%2F5';
     
     render(<LoginPage />);
     
@@ -70,11 +68,6 @@ describe('LoginPage', () => {
 
   it('redirects to /quizzes when no callback URL', async () => {
     (signIn as jest.Mock).mockResolvedValue({ error: null });
-    
-    Object.defineProperty(window, 'location', {
-      value: { search: '' },
-      configurable: true
-    });
     
     render(<LoginPage />);
     

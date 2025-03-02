@@ -10,8 +10,9 @@ export default async function QuizResultsPage({
   params: { quiz_id: string };
   searchParams: { attemptId?: string };
 }) {
-  const quizId = Number(params.quiz_id);
-  const { attemptId } = searchParams;
+  const {quiz_id} = await params;
+  const quizId = Number(quiz_id);
+  const { attemptId } = await searchParams;
 
   if (!attemptId) {
     redirect(`/quizzes/${quizId}`);

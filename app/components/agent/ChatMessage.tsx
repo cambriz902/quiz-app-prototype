@@ -1,0 +1,52 @@
+'use client'
+
+import AgentOutputDisplay from './AgentOutputDisplay';
+import { ApiMessage } from '@/types/openAI';
+import { ChatMessage } from '@/stores/useChatStore';
+import ChatQuizList from './ChatQuizList';
+
+const femaleAgentV1 = "/videos/female-agent-v2.mp4";
+
+interface ChatMessageProps {
+	message: ChatMessage;
+	isLastMessage: boolean; 
+	messageContainerRef: any;
+}
+export default function ChatMessage({ message, isLastMessage, messagesContainerRef }: ChatMessageProps) {
+
+	const isUserMessage = message.role === 'user';
+
+	
+	return (
+		<div className={`mt-1 p-1 rounded-sm ${isUserMessage ? "self-end" : ""}`}>
+			{!isUserMessage ? (
+				<div className="flex flex-col align-items-center gap-2">
+					{isLastMessage ? (
+						<>
+							<AgentOutputDisplay
+								video={'/videos/female-agent-v2.mp4'}
+								containerRef={messagesContainerRef}
+								videoPlayEnabled={true}
+								text={message.content}
+							/>
+						</>
+					) : (
+						<>
+							<AgentOutputDisplay
+								video={'/videos/female-agent-v2.mp4'}
+								containerRef={messagesContainerRef}
+								videoPlayEnabled={false}
+								text={message.content}
+							/>
+						</>
+					)}
+					{message.quizzes?.length ? (
+						<ChatQuizList quizzes={message.quizzes} />
+					) : null}
+				</div>
+			) : (
+				<div className="p-1 rounded-md bg-blue-100">{message.content}</div>
+			)}
+		</div>
+	)
+}
